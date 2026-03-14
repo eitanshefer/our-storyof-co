@@ -945,8 +945,12 @@
       height: 120px;
       max-width: 85vw;
     }
-    .story-scattered.single .photo-item:active,
-    .story-scattered.single .photo-item.carousel-active {
+    .story-scattered.single .photo-item:nth-child(1) {
+      left: auto !important;
+      transform: rotate(-1.5deg) !important;
+    }
+    .story-scattered.single .photo-item:nth-child(1):active,
+    .story-scattered.single .photo-item:nth-child(1).carousel-active {
       transform: scale(1.15) rotate(0deg) !important;
     }
 
