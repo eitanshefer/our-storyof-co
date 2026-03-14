@@ -1908,42 +1908,38 @@
     const desc = item.dataset.desc || '';
 
     if (isMobile()) {
-      // Mobile: play in fullscreen
+      // Mobile: play in overlay with close button
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;';
+
+      const closeBtn = document.createElement('button');
+      closeBtn.innerHTML = '&times;';
+      closeBtn.style.cssText = 'position:absolute;top:12px;right:16px;z-index:100000;background:none;border:none;color:#fff;font-size:2.5rem;cursor:pointer;padding:8px;line-height:1;';
+
       const tempVideo = document.createElement('video');
       tempVideo.src = src;
       tempVideo.controls = true;
       tempVideo.playsInline = true;
       tempVideo.autoplay = true;
-      tempVideo.style.position = 'fixed';
-      tempVideo.style.top = '0';
-      tempVideo.style.left = '0';
-      tempVideo.style.width = '100vw';
-      tempVideo.style.height = '100vh';
-      tempVideo.style.zIndex = '99999';
-      tempVideo.style.background = '#000';
-      document.body.appendChild(tempVideo);
+      tempVideo.style.cssText = 'width:100%;max-height:80vh;object-fit:contain;';
+
+      const titleEl = document.createElement('div');
+      titleEl.textContent = title;
+      titleEl.style.cssText = 'color:#F5E6C8;font-family:DM Serif Display,serif;font-size:1.1rem;padding:1rem 1rem 0;text-align:center;';
+
+      overlay.appendChild(closeBtn);
+      overlay.appendChild(tempVideo);
+      overlay.appendChild(titleEl);
+      document.body.appendChild(overlay);
+      document.body.style.overflow = 'hidden';
 
       function cleanup() {
         tempVideo.pause();
-        tempVideo.remove();
+        overlay.remove();
+        document.body.style.overflow = '';
       }
 
-      // Try native fullscreen
-      const fsPromise = tempVideo.requestFullscreen?.() ||
-                        tempVideo.webkitRequestFullscreen?.() ||
-                        tempVideo.webkitEnterFullscreen?.();
-
-      if (fsPromise && fsPromise.then) {
-        fsPromise.catch(() => {});
-      }
-
-      document.addEventListener('fullscreenchange', function handler() {
-        if (!document.fullscreenElement) { cleanup(); document.removeEventListener('fullscreenchange', handler); }
-      });
-      document.addEventListener('webkitfullscreenchange', function handler() {
-        if (!document.webkitFullscreenElement) { cleanup(); document.removeEventListener('webkitfullscreenchange', handler); }
-      });
-      tempVideo.addEventListener('webkitendfullscreen', cleanup);
+      closeBtn.addEventListener('click', cleanup);
       tempVideo.addEventListener('ended', cleanup);
       tempVideo.play().catch(() => {});
       return;
