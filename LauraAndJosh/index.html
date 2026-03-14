@@ -651,6 +651,110 @@
     flex-shrink: 0;
   }
 
+  /* === MOBILE VIDEO OVERLAY === */
+  .mob-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    z-index: 99999;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+  }
+  .mob-close {
+    position: absolute;
+    top: 8px; right: 12px;
+    z-index: 100000;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2.2rem;
+    cursor: pointer;
+    padding: 6px;
+    line-height: 1;
+  }
+  .mob-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding-top: 44px;
+  }
+  .mob-video {
+    width: 100%;
+    flex-shrink: 0;
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    background: #000;
+  }
+  .mob-playlist {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.5rem 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mob-pl-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: none;
+    border: none;
+    border-left: 3px solid transparent;
+    color: var(--cream, #F5E6C8);
+    font-family: 'DM Serif Display', serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-align: left;
+  }
+  .mob-pl-item:not(:last-child) {
+    border-bottom: 1px solid rgba(200,164,92,0.1);
+  }
+  .mob-pl-item.active {
+    border-left-color: #C8A45C;
+    background: rgba(200,164,92,0.12);
+  }
+  .mob-pl-item.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+  }
+  .mob-pl-num {
+    color: #C8A45C;
+    min-width: 1.2rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .mob-pl-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Landscape: playlist left, video right */
+  @media (orientation: landscape) and (max-width: 1024px) {
+    .mob-content {
+      flex-direction: row;
+      padding-top: 0;
+    }
+    .mob-playlist {
+      flex: 0 0 35%;
+      order: -1;
+      padding-top: 44px;
+      border-right: 1px solid rgba(200,164,92,0.15);
+    }
+    .mob-video {
+      flex: 1;
+      aspect-ratio: auto;
+      height: 100vh;
+      width: auto;
+    }
+    .mob-close {
+      right: auto;
+      left: 12px;
+    }
+  }
+
   /* Toast notification */
   .share-toast {
     position: fixed;
@@ -1908,28 +2012,67 @@
     const desc = item.dataset.desc || '';
 
     if (isMobile()) {
-      // Mobile: play in overlay with close button
-      const overlay = document.createElement('div');
-      overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;';
+      // Mobile: overlay with video + inline playlist
+      // Reuse existing overlay if open, or create new one
+      let overlay = document.getElementById('mobile-player-overlay');
+      if (overlay) {
+        // Already open — just swap video
+        const vid = overlay.querySelector('video');
+        vid.src = src;
+        vid.play().catch(() => {});
+        // Update active state in overlay playlist
+        overlay.querySelectorAll('.mob-pl-item').forEach(b => {
+          b.classList.toggle('active', b.dataset.src === src);
+        });
+        return;
+      }
+
+      overlay = document.createElement('div');
+      overlay.id = 'mobile-player-overlay';
+      overlay.className = 'mob-overlay';
 
       const closeBtn = document.createElement('button');
       closeBtn.innerHTML = '&times;';
-      closeBtn.style.cssText = 'position:absolute;top:12px;right:16px;z-index:100000;background:none;border:none;color:#fff;font-size:2.5rem;cursor:pointer;padding:8px;line-height:1;';
+      closeBtn.className = 'mob-close';
+
+      const content = document.createElement('div');
+      content.className = 'mob-content';
 
       const tempVideo = document.createElement('video');
       tempVideo.src = src;
       tempVideo.controls = true;
       tempVideo.playsInline = true;
       tempVideo.autoplay = true;
-      tempVideo.style.cssText = 'width:100%;max-height:80vh;object-fit:contain;';
+      tempVideo.className = 'mob-video';
 
-      const titleEl = document.createElement('div');
-      titleEl.textContent = title;
-      titleEl.style.cssText = 'color:#F5E6C8;font-family:DM Serif Display,serif;font-size:1.1rem;padding:1rem 1rem 0;text-align:center;';
+      const plList = document.createElement('div');
+      plList.className = 'mob-playlist';
 
+      // Build playlist from page data (all items, including disabled)
+      playlist.querySelectorAll('.playlist-item').forEach(pi => {
+        const btn = document.createElement('button');
+        btn.className = 'mob-pl-item' + (pi.dataset.src === src ? ' active' : '') + (pi.classList.contains('disabled') ? ' disabled' : '');
+        btn.dataset.src = pi.dataset.src || '';
+        btn.dataset.title = pi.dataset.title || '';
+        btn.dataset.desc = pi.dataset.desc || '';
+        const num = pi.querySelector('.playlist-num').textContent;
+        const t = pi.querySelector('.playlist-title').textContent;
+        btn.innerHTML = '<span class="mob-pl-num">' + num + '</span><span class="mob-pl-title">' + t + '</span>';
+        if (!pi.classList.contains('disabled')) {
+          btn.addEventListener('click', () => {
+            tempVideo.src = btn.dataset.src;
+            tempVideo.play().catch(() => {});
+            plList.querySelectorAll('.mob-pl-item').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+          });
+        }
+        plList.appendChild(btn);
+      });
+
+      content.appendChild(tempVideo);
+      content.appendChild(plList);
       overlay.appendChild(closeBtn);
-      overlay.appendChild(tempVideo);
-      overlay.appendChild(titleEl);
+      overlay.appendChild(content);
       document.body.appendChild(overlay);
       document.body.style.overflow = 'hidden';
 
@@ -1940,7 +2083,17 @@
       }
 
       closeBtn.addEventListener('click', cleanup);
-      tempVideo.addEventListener('ended', cleanup);
+      tempVideo.addEventListener('ended', () => {
+        // Auto-advance
+        const active = plList.querySelector('.mob-pl-item.active');
+        let next = active?.nextElementSibling;
+        while (next && next.classList.contains('disabled')) next = next.nextElementSibling;
+        if (next && next.dataset.src) {
+          next.click();
+        } else {
+          cleanup();
+        }
+      });
       tempVideo.play().catch(() => {});
       return;
     }
