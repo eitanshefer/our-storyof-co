@@ -287,9 +287,9 @@
   /* === GALLERY SCATTERED (horizontal scroll, organic feel) === */
   .gallery-scattered {
     display: grid;
-    grid-template-rows: auto;
+    grid-template-rows: repeat(3, 180px);
     grid-auto-flow: column dense;
-    grid-auto-columns: 220px;
+    grid-auto-columns: 200px;
     gap: 40px 50px;
     overflow: hidden;
     padding: 3rem 2rem;
@@ -320,8 +320,14 @@
   .gallery-scattered .photo-item img {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
   }
+
+  /* Varied sizes — some span 2 rows for that scattered feel */
+  .gallery-scattered .photo-item:nth-child(5n+1) { grid-row: span 2; }
+  .gallery-scattered .photo-item:nth-child(7n+3) { grid-row: span 2; }
+  .gallery-scattered .photo-item:nth-child(11n+7) { grid-row: span 2; }
 
   /* Organic rotations */
   .gallery-scattered .photo-item:nth-child(6n+1) { transform: rotate(-3deg); }
@@ -921,31 +927,6 @@
     .story-scattered.single .photo-item {
       flex: 0 0 90% !important;
       width: 90% !important;
-    }
-    .story-scattered.single {
-      overflow: hidden;
-      scroll-snap-type: none;
-      justify-content: center;
-      padding: 1rem 5%;
-    }
-    .story-scattered.single .photo-item {
-      flex: 0 0 auto !important;
-      width: auto !important;
-      transform: rotate(-1.5deg) !important;
-      opacity: 1 !important;
-    }
-    .story-scattered.single .photo-item img {
-      width: auto;
-      height: 120px;
-      max-width: 85vw;
-    }
-    .story-scattered.single .photo-item:nth-child(1) {
-      left: auto !important;
-      transform: rotate(-1.5deg) !important;
-    }
-    .story-scattered.single .photo-item:nth-child(1):active,
-    .story-scattered.single .photo-item:nth-child(1).carousel-active {
-      transform: scale(1.15) rotate(0deg) !important;
     }
 
     /* Story section */
