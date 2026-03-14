@@ -81,7 +81,6 @@
   /* Show on parent hover */
   .photo-item:hover .share-btn,
   .story-block:hover .share-btn,
-  .media-card:hover .share-btn,
   .hero:hover .share-btn { opacity: 1; }
 
   /* Hero share - top right */
@@ -107,14 +106,6 @@
     right: -40px;
   }
 
-  /* Media card share */
-  .media-card {
-    position: relative;
-  }
-  .media-card .share-btn {
-    top: 8px;
-    right: 8px;
-  }
 
   /* === HERO === */
   .hero {
@@ -509,56 +500,156 @@
     letter-spacing: 0.02em;
   }
 
-  .media-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
+  /* === PLAYLIST LAYOUT === */
+  .media-player-layout {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
   }
 
-  .media-card {
-    background: var(--warm-bg-light);
+  .playlist {
+    flex: 0 0 35%;
+    max-height: 500px;
+    overflow-y: auto;
     border-radius: 8px;
-    overflow: hidden;
+    background: var(--warm-bg-light);
     border: 1px solid rgba(200,164,92,0.1);
-    transition: transform 0.3s;
   }
-  .media-card:hover { transform: translateY(-4px); }
+  .playlist::-webkit-scrollbar { width: 4px; }
+  .playlist::-webkit-scrollbar-track { background: transparent; }
+  .playlist::-webkit-scrollbar-thumb { background: rgba(200,164,92,0.3); border-radius: 2px; }
 
-  .media-card .media-thumb {
+  .playlist-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
     width: 100%;
-    aspect-ratio: 16/9;
-    background: var(--warm-bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 1rem 1.2rem;
+    background: none;
+    border: none;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    text-align: left;
+    color: var(--text-light);
+    font-family: inherit;
+    transition: background 0.2s, border-color 0.2s;
   }
-
-  .play-icon {
-    width: 50px; height: 50px;
-    border: 2px solid var(--gold);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--gold);
-    font-size: 1.2rem;
+  .playlist-item:not(:last-child) {
+    border-bottom: 1px solid rgba(200,164,92,0.08);
+  }
+  .playlist-item:hover:not(.disabled) {
+    background: rgba(200,164,92,0.08);
+  }
+  .playlist-item.active {
+    border-left-color: var(--gold);
+    background: rgba(200,164,92,0.12);
+  }
+  .playlist-item.disabled {
+    opacity: 0.4;
+    cursor: default;
     pointer-events: none;
-    transition: opacity 0.3s;
   }
 
-  .media-card .media-thumb { position: relative; cursor: pointer; }
+  .playlist-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    min-width: 1.5rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .playlist-item.active .playlist-num {
+    color: var(--gold);
+  }
 
-  .media-card .media-thumb video {
+  .playlist-text {
+    min-width: 0;
+  }
+  .playlist-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1rem;
+    color: var(--cream);
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .playlist-sub {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.4;
+  }
+
+  .player-area {
+    flex: 1;
+    min-width: 0;
+  }
+  .player-area video {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
-    top: 0; left: 0;
+    aspect-ratio: 1 / 1;
+    background: #000;
+    border-radius: 8px;
+    display: block;
+  }
+  .player-info {
+    padding: 1.2rem 0.2rem;
+  }
+  .player-info h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.25rem;
+    color: var(--cream);
+    margin-bottom: 0.4rem;
+  }
+  .player-info p {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    line-height: 1.5;
   }
 
-  .media-card.playing .media-thumb { aspect-ratio: auto; }
-  .media-card.playing .media-thumb video { position: relative; object-fit: contain; background: #000; }
-  .media-card.playing .play-icon { opacity: 0; }
+  /* === SHARE MENU (Desktop) === */
+  .share-menu {
+    position: fixed;
+    z-index: 9999;
+    background: rgba(30,24,15,0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(200,164,92,0.3);
+    border-radius: 10px;
+    padding: 0.5rem 0;
+    min-width: 200px;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .share-menu.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .share-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.65rem 1.2rem;
+    background: none;
+    border: none;
+    color: var(--cream);
+    font-family: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .share-option:hover {
+    background: rgba(200,164,92,0.15);
+  }
+  .share-option svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
 
   /* Toast notification */
   .share-toast {
@@ -581,10 +672,6 @@
     transform: translateX(-50%) translateY(0);
     opacity: 1;
   }
-
-  .media-card .media-info { padding: 1.2rem 1.4rem; }
-  .media-card .media-info h3 { font-family: 'DM Serif Display', serif; font-size: 1.15rem; color: var(--cream); margin-bottom: 0.4rem; letter-spacing: 0.01em; }
-  .media-card .media-info p { font-size: 0.85rem; color: var(--text-dim); font-weight: 300; line-height: 1.5; letter-spacing: 0.01em; }
 
   /* === FOOTER === */
   footer {
@@ -757,14 +844,21 @@
       opacity: 0.4;
     }
     .photo-item:active .share-btn,
-    .story-block:active .share-btn,
-    .media-card:active .share-btn {
+    .story-block:active .share-btn {
       opacity: 1;
     }
 
-    /* Media grid */
-    .media-grid {
-      grid-template-columns: 1fr;
+    /* Playlist layout — mobile */
+    .media-player-layout {
+      flex-direction: column;
+    }
+    .playlist {
+      flex: none;
+      width: 100%;
+      max-height: none;
+    }
+    .player-area {
+      display: none;
     }
 
     .media-section {
@@ -1375,13 +1469,60 @@
   <div class="section-label">Behind the Story</div>
   <h2>Voices & Moments</h2>
   <p class="section-desc">Interviews, archive footage, and excerpts from the film</p>
-  <div class="media-grid">
-    <div class="media-card" data-video="https://media.storyof.co/LauraAndJosh/videos/love-at-first-swipe.mp4"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div><div class="media-thumb"><video preload="metadata" playsinline><source src="https://media.storyof.co/LauraAndJosh/videos/love-at-first-swipe.mp4" type="video/mp4"></video><div class="play-icon">&#9654;</div></div><div class="media-info"><h3>The Last Message</h3><p>How a buried Tinder match became a marriage in five months</p></div></div>
-    <div class="media-card" data-video="https://media.storyof.co/LauraAndJosh/videos/no-numbers-between-zero-and-ten.mp4"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div><div class="media-thumb"><video preload="metadata" playsinline><source src="https://media.storyof.co/LauraAndJosh/videos/no-numbers-between-zero-and-ten.mp4" type="video/mp4"></video><div class="play-icon">&#9654;</div></div><div class="media-info"><h3>Year One</h3><p>Job loss, silver coins, and choosing to stay</p></div></div>
-    <div class="media-card" data-video="https://media.storyof.co/LauraAndJosh/videos/meeting-lauras-family-in-colombia.mp4"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div><div class="media-thumb"><video preload="metadata" playsinline><source src="https://media.storyof.co/LauraAndJosh/videos/meeting-lauras-family-in-colombia.mp4" type="video/mp4"></video><div class="play-icon">&#9654;</div></div><div class="media-info"><h3>Thunder &amp; Lluvia</h3><p>The dogs who brought them together</p></div></div>
-    <div class="media-card" data-video="https://media.storyof.co/LauraAndJosh/videos/dr-anthony.mp4"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div><div class="media-thumb"><video preload="metadata" playsinline><source src="https://media.storyof.co/LauraAndJosh/videos/dr-anthony.mp4" type="video/mp4"></video><div class="play-icon">&#9654;</div></div><div class="media-info"><h3>Dr. Anthony</h3><p>The man who gave Laura her American start</p></div></div>
-    <div class="media-card"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div><div class="media-thumb"><div class="play-icon">&#9654;</div></div><div class="media-info"><h3>Third Time&rsquo;s the Charm</h3><p>Laura&rsquo;s fight to become a veterinarian</p></div></div>
-    <div class="media-card" data-video="https://media.storyof.co/LauraAndJosh/videos/celebrating-10-years-together.mp4"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div><div class="media-thumb"><video preload="metadata" playsinline><source src="https://media.storyof.co/LauraAndJosh/videos/celebrating-10-years-together.mp4" type="video/mp4"></video><div class="play-icon">&#9654;</div></div><div class="media-info"><h3>Ten Years Later</h3><p>Renewing vows on the beach in Puerto Rico</p></div></div>
+  <div class="media-player-layout">
+    <div class="playlist">
+      <button class="playlist-item active" data-src="https://media.storyof.co/LauraAndJosh/videos/love-at-first-swipe.mp4" data-title="The Last Message" data-desc="How a buried Tinder match became a marriage in five months">
+        <span class="playlist-num">1</span>
+        <div class="playlist-text">
+          <div class="playlist-title">The Last Message</div>
+          <div class="playlist-sub">How a buried Tinder match became a marriage</div>
+        </div>
+      </button>
+      <button class="playlist-item" data-src="https://media.storyof.co/LauraAndJosh/videos/no-numbers-between-zero-and-ten.mp4" data-title="Year One" data-desc="Job loss, silver coins, and choosing to stay">
+        <span class="playlist-num">2</span>
+        <div class="playlist-text">
+          <div class="playlist-title">Year One</div>
+          <div class="playlist-sub">Job loss, silver coins, and choosing to stay</div>
+        </div>
+      </button>
+      <button class="playlist-item" data-src="https://media.storyof.co/LauraAndJosh/videos/meeting-lauras-family-in-colombia.mp4" data-title="Thunder &amp; Lluvia" data-desc="The dogs who brought them together">
+        <span class="playlist-num">3</span>
+        <div class="playlist-text">
+          <div class="playlist-title">Thunder &amp; Lluvia</div>
+          <div class="playlist-sub">The dogs who brought them together</div>
+        </div>
+      </button>
+      <button class="playlist-item" data-src="https://media.storyof.co/LauraAndJosh/videos/dr-anthony.mp4" data-title="Dr. Anthony" data-desc="The man who gave Laura her American start">
+        <span class="playlist-num">4</span>
+        <div class="playlist-text">
+          <div class="playlist-title">Dr. Anthony</div>
+          <div class="playlist-sub">The man who gave Laura her American start</div>
+        </div>
+      </button>
+      <button class="playlist-item disabled" data-title="Third Time&rsquo;s the Charm">
+        <span class="playlist-num">5</span>
+        <div class="playlist-text">
+          <div class="playlist-title">Third Time&rsquo;s the Charm</div>
+          <div class="playlist-sub">Coming soon</div>
+        </div>
+      </button>
+      <button class="playlist-item" data-src="https://media.storyof.co/LauraAndJosh/videos/celebrating-10-years-together.mp4" data-title="Ten Years Later" data-desc="Renewing vows on the beach in Puerto Rico">
+        <span class="playlist-num">6</span>
+        <div class="playlist-text">
+          <div class="playlist-title">Ten Years Later</div>
+          <div class="playlist-sub">Renewing vows on the beach in Puerto Rico</div>
+        </div>
+      </button>
+    </div>
+    <div class="player-area">
+      <video id="main-player" controls playsinline preload="metadata">
+        <source src="https://media.storyof.co/LauraAndJosh/videos/love-at-first-swipe.mp4" type="video/mp4">
+      </video>
+      <div class="player-info">
+        <h3>The Last Message</h3>
+        <p>How a buried Tinder match became a marriage in five months</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1629,7 +1770,7 @@
   window.addEventListener('resize', () => { setTimeout(scheduleDrawTrail, 100); });
 })();
 
-// Share buttons — Web Share API with clipboard fallback
+// Share buttons — Desktop: popover menu, Mobile: native share
 (function() {
   const toast = document.createElement('div');
   toast.className = 'share-toast';
@@ -1644,65 +1785,200 @@
     toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
   }
 
+  // Detect mobile/touch device
+  function isMobile() {
+    return window.matchMedia('(pointer: coarse)').matches;
+  }
+
+  // Create shared share menu
+  const shareMenu = document.createElement('div');
+  shareMenu.className = 'share-menu';
+  shareMenu.id = 'share-menu';
+  shareMenu.innerHTML = `
+    <button class="share-option" data-action="facebook">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+      Facebook
+    </button>
+    <button class="share-option" data-action="twitter">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      X (Twitter)
+    </button>
+    <button class="share-option" data-action="whatsapp">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+      WhatsApp
+    </button>
+    <button class="share-option" data-action="email">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      Email
+    </button>
+    <button class="share-option" data-action="copy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy Link
+    </button>
+  `;
+  document.body.appendChild(shareMenu);
+
+  let currentShareTitle = '';
+  let currentShareUrl = '';
+
+  function closeShareMenu() {
+    shareMenu.classList.remove('visible');
+  }
+
+  // Close on click outside or scroll
+  document.addEventListener('click', (e) => {
+    if (!shareMenu.contains(e.target)) closeShareMenu();
+  });
+  document.addEventListener('scroll', closeShareMenu, { passive: true });
+
+  // Handle share option clicks
+  shareMenu.addEventListener('click', async (e) => {
+    const opt = e.target.closest('.share-option');
+    if (!opt) return;
+    const action = opt.dataset.action;
+    const encodedUrl = encodeURIComponent(currentShareUrl);
+    const encodedTitle = encodeURIComponent(currentShareTitle);
+
+    switch (action) {
+      case 'facebook':
+        window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodedUrl, '_blank', 'width=600,height=400');
+        break;
+      case 'twitter':
+        window.open('https://twitter.com/intent/tweet?url=' + encodedUrl + '&text=' + encodedTitle, '_blank', 'width=600,height=400');
+        break;
+      case 'whatsapp':
+        window.open('https://wa.me/?text=' + encodedTitle + '%20' + encodedUrl, '_blank', 'width=600,height=400');
+        break;
+      case 'email':
+        window.location.href = 'mailto:?subject=' + encodedTitle + '&body=' + encodedUrl;
+        break;
+      case 'copy':
+        try {
+          await navigator.clipboard.writeText(currentShareUrl);
+          showToast('Copied!');
+        } catch (_) {}
+        break;
+    }
+    closeShareMenu();
+  });
+
   document.querySelectorAll('.share-btn').forEach(btn => {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       e.preventDefault();
-      const card = btn.closest('.media-card, .photo-item, .story-block, .hero');
-      const title = card?.querySelector('h3, h2, .chapter-title')?.textContent || 'Laura & Josh — our.storyof.co';
-      const url = window.location.href;
+      const card = btn.closest('.photo-item, .story-block, .hero');
+      currentShareTitle = card?.querySelector('h3, h2, .chapter-title')?.textContent || 'Laura & Josh — our.storyof.co';
+      currentShareUrl = window.location.href;
 
-      try {
-        if (navigator.share) {
-          await navigator.share({ title, url });
-        } else {
-          await navigator.clipboard.writeText(url);
-          showToast();
+      if (isMobile() && navigator.share) {
+        try {
+          await navigator.share({ title: currentShareTitle, url: currentShareUrl });
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            try { await navigator.clipboard.writeText(currentShareUrl); showToast(); } catch (_) {}
+          }
         }
-      } catch (err) {
-        if (err.name !== 'AbortError') {
-          try {
-            await navigator.clipboard.writeText(url);
-            showToast();
-          } catch (_) {}
-        }
+      } else {
+        // Position and show share menu near the button
+        const rect = btn.getBoundingClientRect();
+        shareMenu.style.top = (rect.bottom + 8) + 'px';
+        shareMenu.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - 220)) + 'px';
+        shareMenu.classList.toggle('visible');
       }
     });
   });
 })();
 
-// Video playback — click to play/pause inline
+// Playlist — desktop: swap video source, mobile: fullscreen
 (function() {
-  document.querySelectorAll('.media-card[data-video]').forEach(card => {
-    const thumb = card.querySelector('.media-thumb');
-    const video = thumb.querySelector('video');
-    if (!video) return;
+  const player = document.getElementById('main-player');
+  const playerInfo = document.querySelector('.player-info');
+  const playlist = document.querySelector('.playlist');
+  if (!playlist) return;
 
-    thumb.addEventListener('click', () => {
-      if (video.paused) {
-        // Pause any other playing videos
-        document.querySelectorAll('.media-card.playing video').forEach(v => {
-          if (v !== video) { v.pause(); v.closest('.media-card').classList.remove('playing'); }
-        });
-        card.classList.add('playing');
-        video.controls = true;
-        video.play();
-      } else {
-        video.pause();
+  const items = playlist.querySelectorAll('.playlist-item:not(.disabled)');
+
+  function isMobile() {
+    return window.matchMedia('(pointer: coarse)').matches;
+  }
+
+  function selectItem(item) {
+    const src = item.dataset.src;
+    const title = item.dataset.title;
+    const desc = item.dataset.desc || '';
+
+    if (isMobile()) {
+      // Mobile: play in fullscreen
+      const tempVideo = document.createElement('video');
+      tempVideo.src = src;
+      tempVideo.controls = true;
+      tempVideo.playsInline = true;
+      tempVideo.autoplay = true;
+      tempVideo.style.position = 'fixed';
+      tempVideo.style.top = '0';
+      tempVideo.style.left = '0';
+      tempVideo.style.width = '100vw';
+      tempVideo.style.height = '100vh';
+      tempVideo.style.zIndex = '99999';
+      tempVideo.style.background = '#000';
+      document.body.appendChild(tempVideo);
+
+      function cleanup() {
+        tempVideo.pause();
+        tempVideo.remove();
+      }
+
+      // Try native fullscreen
+      const fsPromise = tempVideo.requestFullscreen?.() ||
+                        tempVideo.webkitRequestFullscreen?.() ||
+                        tempVideo.webkitEnterFullscreen?.();
+
+      if (fsPromise && fsPromise.then) {
+        fsPromise.catch(() => {});
+      }
+
+      document.addEventListener('fullscreenchange', function handler() {
+        if (!document.fullscreenElement) { cleanup(); document.removeEventListener('fullscreenchange', handler); }
+      });
+      document.addEventListener('webkitfullscreenchange', function handler() {
+        if (!document.webkitFullscreenElement) { cleanup(); document.removeEventListener('webkitfullscreenchange', handler); }
+      });
+      tempVideo.addEventListener('webkitendfullscreen', cleanup);
+      tempVideo.addEventListener('ended', cleanup);
+      tempVideo.play().catch(() => {});
+      return;
+    }
+
+    // Desktop: swap source in main player
+    playlist.querySelectorAll('.playlist-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+
+    player.pause();
+    player.querySelector('source').src = src;
+    player.load();
+    playerInfo.querySelector('h3').textContent = title;
+    playerInfo.querySelector('p').textContent = desc;
+  }
+
+  items.forEach(item => {
+    item.addEventListener('click', () => selectItem(item));
+  });
+
+  // Auto-advance on video end
+  if (player) {
+    player.addEventListener('ended', () => {
+      const active = playlist.querySelector('.playlist-item.active');
+      let next = active?.nextElementSibling;
+      // Skip disabled items
+      while (next && next.classList.contains('disabled')) {
+        next = next.nextElementSibling;
+      }
+      if (next && next.dataset.src) {
+        selectItem(next);
+        player.play().catch(() => {});
       }
     });
-
-    video.addEventListener('ended', () => {
-      card.classList.remove('playing');
-      video.controls = false;
-      video.currentTime = 0;
-    });
-
-    video.addEventListener('pause', () => {
-      if (video.ended) return;
-      // Keep controls visible while paused mid-playback
-    });
-  });
+  }
 })();
 </script>
 </body>
