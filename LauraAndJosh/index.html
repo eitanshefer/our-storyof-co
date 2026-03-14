@@ -1575,28 +1575,28 @@
   <p class="section-desc">Interviews, archive footage, and excerpts from the film</p>
   <div class="media-player-layout">
     <div class="playlist">
-      <button class="playlist-item active" data-src="https://media.storyof.co/LauraAndJosh/videos/love-at-first-swipe.mp4?v=2" data-title="The Last Message" data-desc="How a buried Tinder match became a marriage in five months">
+      <button class="playlist-item active" data-src="https://media.storyof.co/LauraAndJosh/videos/love-at-first-swipe.mp4" data-title="The Last Message" data-desc="How a buried Tinder match became a marriage in five months">
         <span class="playlist-num">1</span>
         <div class="playlist-text">
           <div class="playlist-title">The Last Message</div>
           <div class="playlist-sub">How a buried Tinder match became a marriage</div>
         </div>
       </button>
-      <button class="playlist-item" data-src="https://media.storyof.co/LauraAndJosh/videos/no-numbers-between-zero-and-ten.mp4?v=2" data-title="Year One" data-desc="Job loss, silver coins, and choosing to stay">
+      <button class="playlist-item" data-src="https://media.storyof.co/LauraAndJosh/videos/no-numbers-between-zero-and-ten.mp4" data-title="Year One" data-desc="Job loss, silver coins, and choosing to stay">
         <span class="playlist-num">2</span>
         <div class="playlist-text">
           <div class="playlist-title">Year One</div>
           <div class="playlist-sub">Job loss, silver coins, and choosing to stay</div>
         </div>
       </button>
-      <button class="playlist-item" data-src="https://media.storyof.co/LauraAndJosh/videos/meeting-lauras-family-in-colombia.mp4?v=2" data-title="Thunder &amp; Lluvia" data-desc="The dogs who brought them together">
+      <button class="playlist-item" data-src="https://media.storyof.co/LauraAndJosh/videos/meeting-lauras-family-in-colombia.mp4" data-title="Thunder &amp; Lluvia" data-desc="The dogs who brought them together">
         <span class="playlist-num">3</span>
         <div class="playlist-text">
           <div class="playlist-title">Thunder &amp; Lluvia</div>
           <div class="playlist-sub">The dogs who brought them together</div>
         </div>
       </button>
-      <button class="playlist-item" data-src="https://media.storyof.co/LauraAndJosh/videos/dr-anthony.mp4?v=2" data-title="Dr. Anthony" data-desc="The man who gave Laura her American start">
+      <button class="playlist-item" data-src="https://media.storyof.co/LauraAndJosh/videos/dr-anthony.mp4" data-title="Dr. Anthony" data-desc="The man who gave Laura her American start">
         <span class="playlist-num">4</span>
         <div class="playlist-text">
           <div class="playlist-title">Dr. Anthony</div>
@@ -1610,7 +1610,7 @@
           <div class="playlist-sub">Coming soon</div>
         </div>
       </button>
-      <button class="playlist-item" data-src="https://media.storyof.co/LauraAndJosh/videos/celebrating-10-years-together.mp4?v=2" data-title="Ten Years Later" data-desc="Renewing vows on the beach in Puerto Rico">
+      <button class="playlist-item" data-src="https://media.storyof.co/LauraAndJosh/videos/celebrating-10-years-together.mp4" data-title="Ten Years Later" data-desc="Renewing vows on the beach in Puerto Rico">
         <span class="playlist-num">6</span>
         <div class="playlist-text">
           <div class="playlist-title">Ten Years Later</div>
@@ -1619,8 +1619,8 @@
       </button>
     </div>
     <div class="player-area">
-      <video id="main-player" controls playsinline preload="metadata">
-        <source src="https://media.storyof.co/LauraAndJosh/videos/love-at-first-swipe.mp4?v=2" type="video/mp4">
+      <video id="main-player" controls playsinline preload="none">
+        <source type="video/mp4">
       </video>
       <div class="player-info">
         <h3>The Last Message</h3>
@@ -2100,20 +2100,55 @@
       return;
     }
 
-    // Desktop: swap source in main player
+    // Desktop: fetch full video as blob, then play (works around non-faststart mp4s)
     playlist.querySelectorAll('.playlist-item').forEach(i => i.classList.remove('active'));
     item.classList.add('active');
-
-    player.pause();
-    player.querySelector('source').src = src;
-    player.load();
     playerInfo.querySelector('h3').textContent = title;
     playerInfo.querySelector('p').textContent = desc;
+
+    player.pause();
+    player.removeAttribute('src');
+    player.querySelector('source').removeAttribute('src');
+    player.load();
+
+    fetch(src)
+      .then(r => r.blob())
+      .then(blob => {
+        const url = URL.createObjectURL(blob);
+        // Revoke previous blob URL
+        if (player._blobUrl) URL.revokeObjectURL(player._blobUrl);
+        player._blobUrl = url;
+        player.querySelector('source').src = url;
+        player.load();
+      })
+      .catch(() => {
+        // Fallback: try direct source
+        player.querySelector('source').src = src;
+        player.load();
+      });
   }
 
   items.forEach(item => {
     item.addEventListener('click', () => selectItem(item));
   });
+
+  // Load first video on page load (desktop only)
+  if (!isMobile()) {
+    const firstItem = playlist.querySelector('.playlist-item.active');
+    if (firstItem && firstItem.dataset.src) {
+      fetch(firstItem.dataset.src)
+        .then(r => r.blob())
+        .then(blob => {
+          const url = URL.createObjectURL(blob);
+          player._blobUrl = url;
+          player.querySelector('source').src = url;
+          player.load();
+        }).catch(() => {
+          player.querySelector('source').src = firstItem.dataset.src;
+          player.load();
+        });
+    }
+  }
 
   // Auto-advance on video end
   if (player) {
