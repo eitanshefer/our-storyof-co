@@ -1515,9 +1515,7 @@
       </button>
     </div>
     <div class="player-area">
-      <video id="main-player" controls playsinline preload="metadata">
-        <source src="https://media.storyof.co/LauraAndJosh/videos/love-at-first-swipe.mp4" type="video/mp4">
-      </video>
+      <video id="main-player" src="https://media.storyof.co/LauraAndJosh/videos/love-at-first-swipe.mp4" controls playsinline preload="metadata" type="video/mp4"></video>
       <div class="player-info">
         <h3>The Last Message</h3>
         <p>How a buried Tinder match became a marriage in five months</p>
@@ -1627,7 +1625,9 @@
 
     function advance() {
       currentIndex = (currentIndex + 1) % allItems.length;
-      allItems[currentIndex].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      const item = allItems[currentIndex];
+      const scrollLeft = item.offsetLeft - (gallery.offsetWidth / 2) + (item.offsetWidth / 2);
+      gallery.scrollTo({ left: scrollLeft, behavior: 'smooth' });
       updateActive();
     }
 
@@ -1954,7 +1954,7 @@
     item.classList.add('active');
 
     player.pause();
-    player.querySelector('source').src = src;
+    player.src = src;
     player.load();
     playerInfo.querySelector('h3').textContent = title;
     playerInfo.querySelector('p').textContent = desc;
