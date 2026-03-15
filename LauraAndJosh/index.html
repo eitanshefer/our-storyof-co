@@ -1619,9 +1619,7 @@
       </button>
     </div>
     <div class="player-area">
-      <video id="main-player" controls playsinline preload="none">
-        <source type="video/mp4">
-      </video>
+      <video id="main-player" controls playsinline preload="auto" src="https://media.storyof.co/LauraAndJosh/videos/love-at-first-swipe.mp4"></video>
       <div class="player-info">
         <h3>The Last Message</h3>
         <p>How a buried Tinder match became a marriage in five months</p>
@@ -2100,55 +2098,19 @@
       return;
     }
 
-    // Desktop: fetch full video as blob, then play (works around non-faststart mp4s)
+    // Desktop: swap video source directly
     playlist.querySelectorAll('.playlist-item').forEach(i => i.classList.remove('active'));
     item.classList.add('active');
     playerInfo.querySelector('h3').textContent = title;
     playerInfo.querySelector('p').textContent = desc;
 
     player.pause();
-    player.removeAttribute('src');
-    player.querySelector('source').removeAttribute('src');
-    player.load();
-
-    fetch(src)
-      .then(r => r.blob())
-      .then(blob => {
-        const url = URL.createObjectURL(blob);
-        // Revoke previous blob URL
-        if (player._blobUrl) URL.revokeObjectURL(player._blobUrl);
-        player._blobUrl = url;
-        player.querySelector('source').src = url;
-        player.load();
-      })
-      .catch(() => {
-        // Fallback: try direct source
-        player.querySelector('source').src = src;
-        player.load();
-      });
+    player.src = src;
   }
 
   items.forEach(item => {
     item.addEventListener('click', () => selectItem(item));
   });
-
-  // Load first video on page load (desktop only)
-  if (!isMobile()) {
-    const firstItem = playlist.querySelector('.playlist-item.active');
-    if (firstItem && firstItem.dataset.src) {
-      fetch(firstItem.dataset.src)
-        .then(r => r.blob())
-        .then(blob => {
-          const url = URL.createObjectURL(blob);
-          player._blobUrl = url;
-          player.querySelector('source').src = url;
-          player.load();
-        }).catch(() => {
-          player.querySelector('source').src = firstItem.dataset.src;
-          player.load();
-        });
-    }
-  }
 
   // Auto-advance on video end
   if (player) {
