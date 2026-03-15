@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Laura & Josh | our.storyof.co</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/surprise/Josh and Laura (40).jpg">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -123,10 +126,18 @@
   .hero-bg {
     position: absolute;
     inset: 0;
-    background-image: url('assets/surprise/Josh and Laura (40).png');
+    background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAFKADAAQAAAABAAAACwAAAAD/wAARCAALABQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9sAQwAPDw8PDw8aDw8aJBoaGiQxJCQkJDE+MTExMTE+Sz4+Pj4+PktLS0tLS0tLWlpaWlpaaWlpaWl2dnZ2dnZ2dnZ2/9sAQwESExMeHB40HBw0e1RFVHt7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7/90ABAAC/9oADAMBAAIRAxEAPwCe2uLAqrS5Ge3YVNczWQGMcYOCeP0rCt1G0mpmVWQOwy2Ryfep52tA5E9SCaUvIWBOD0qLc3vQ+Q5AJ496Zk+p/OpLP//Z');
     background-size: cover;
     background-position: center bottom;
     z-index: 0;
+    filter: blur(20px);
+    transform: scale(1.1);
+    transition: filter 0.5s ease, transform 0.5s ease;
+  }
+  .hero-bg.loaded {
+    background-image: url('assets/surprise/Josh and Laura (40).jpg');
+    filter: none;
+    transform: scale(1);
   }
 
   .hero-overlay {
@@ -1258,6 +1269,46 @@
     }
   }
 
+  /* === LOADING SCREEN === */
+  .loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: #1a1408;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s ease;
+  }
+  .loading-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .loading-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: var(--cream);
+    margin-bottom: 2rem;
+    letter-spacing: 0.03em;
+    text-align: center;
+    padding: 0 2rem;
+  }
+  .loading-bar-track {
+    width: 200px;
+    height: 2px;
+    background: rgba(200,164,92,0.15);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .loading-bar-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--gold);
+    border-radius: 1px;
+    transition: width 0.3s ease;
+  }
+
   /* Texture overlay */
   body::after {
     content: '';
@@ -1270,6 +1321,12 @@
 </style>
 </head>
 <body>
+
+<!-- LOADING SCREEN -->
+<div class="loading-screen" id="loading-screen">
+  <div class="loading-text">Bringing you the story of Laura & Josh...</div>
+  <div class="loading-bar-track"><div class="loading-bar-fill" id="loading-bar"></div></div>
+</div>
 
 <!-- STORYOF LOGO TOP-LEFT -->
 <a href="https://storyof.co" class="storyof-logo" target="_blank"><strong>Story</strong><span>of</span></a>
@@ -1288,12 +1345,12 @@
 <section style="padding: 4rem 0;">
   <div class="section-label">Frames from the Film</div>
   <div class="scattered-photos">
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (42).png" alt="Film frame"><div class="caption">Through every storm, side by side</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (43).png" alt="Film frame"><div class="caption">She never stopped chasing the horizon</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (44).png" alt="Film frame"><div class="caption">Thunder &mdash; the one who was there for all of it</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (45).png" alt="Film frame"><div class="caption">One last message before quitting the app</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (46).png" alt="Film frame"><div class="caption">Ten years of choosing each other</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (47).png" alt="Film frame"><div class="caption">Thunder, Rain, and Lightning &mdash; the storm family</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (42).png" alt="Film frame" loading="lazy"><div class="caption">Through every storm, side by side</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (43).png" alt="Film frame" loading="lazy"><div class="caption">She never stopped chasing the horizon</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (44).png" alt="Film frame" loading="lazy"><div class="caption">Thunder &mdash; the one who was there for all of it</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (45).png" alt="Film frame" loading="lazy"><div class="caption">One last message before quitting the app</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (46).png" alt="Film frame" loading="lazy"><div class="caption">Ten years of choosing each other</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (47).png" alt="Film frame" loading="lazy"><div class="caption">Thunder, Rain, and Lightning &mdash; the storm family</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
   </div>
 </section>
 
@@ -1310,7 +1367,7 @@
   </div>
 
   <div class="story-scattered single">
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (45).png" alt="Josh and Laura meeting"><div class="caption">Five months from the first date to tying the knot</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (45).png" alt="Josh and Laura meeting" loading="lazy"><div class="caption">Five months from the first date to tying the knot</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
   </div>
 
   <div class="story-block">
@@ -1321,8 +1378,8 @@
   </div>
 
   <div class="story-scattered pair">
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (42).png" alt="Through it all, together"><div class="caption">Through every storm, side by side</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (43).png" alt="Building a life"><div class="caption">The view is better when you've earned it</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (42).png" alt="Through it all, together" loading="lazy"><div class="caption">Through every storm, side by side</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (43).png" alt="Building a life" loading="lazy"><div class="caption">The view is better when you've earned it</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
   </div>
 
   <div class="story-block">
@@ -1333,7 +1390,7 @@
   </div>
 
   <div class="story-scattered single">
-    <div class="photo-item"><img src="assets/photos/illustrated-wedding-couple.png" alt="Josh and Laura illustrated"><div class="caption">An island in Colombia, five months after the first date</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/photos/illustrated-wedding-couple.png" alt="Josh and Laura illustrated" loading="lazy"><div class="caption">An island in Colombia, five months after the first date</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
   </div>
 
   <div class="story-block">
@@ -1365,7 +1422,7 @@
         <div class="tl-title">A Shot in the Dark</div>
         <p class="tl-desc">One last message before quitting the app. A sea lion photo, a dog named Thunder, and married five months later.</p>
       </div>
-      <div class="timeline-illus"><img src="assets/timeline/A Shot in the Dark.png" alt="A Shot in the Dark"></div>
+      <div class="timeline-illus"><img src="assets/timeline/A Shot in the Dark.png" alt="A Shot in the Dark" loading="lazy"></div>
     </div>
 
     <div class="timeline-node">
@@ -1374,7 +1431,7 @@
         <div class="tl-title">All the Way Down, All the Way Up</div>
         <p class="tl-desc">Job loss, silver coins for an immigration lawyer. By December &mdash; the best financial year of his life.</p>
       </div>
-      <div class="timeline-illus"><img src="assets/timeline/All the Way Down, All the Way Up.png" alt="All the Way Down, All the Way Up"></div>
+      <div class="timeline-illus"><img src="assets/timeline/All the Way Down, All the Way Up.png" alt="All the Way Down, All the Way Up" loading="lazy"></div>
     </div>
 
     <div class="timeline-node">
@@ -1383,7 +1440,7 @@
         <div class="tl-title">Colombia</div>
         <p class="tl-desc">Josh met Laura's mother and Lluvia &mdash; her dog since she was nine. Then Lluvia was gone. First apartment together.</p>
       </div>
-      <div class="timeline-illus"><img src="assets/timeline/Colombia.png" alt="Colombia"></div>
+      <div class="timeline-illus"><img src="assets/timeline/Colombia.png" alt="Colombia" loading="lazy"></div>
     </div>
 
     <div class="timeline-node">
@@ -1392,7 +1449,7 @@
         <div class="tl-title">Thunder, Rain &amp; Lightning</div>
         <p class="tl-desc">A fearless kitten named Rayo &mdash; Lightning. Thunder, Rain, and Lightning. The storm family was complete.</p>
       </div>
-      <div class="timeline-illus"><img src="assets/timeline/Thunder, Rain & Lightning.png" alt="Thunder, Rain & Lightning"></div>
+      <div class="timeline-illus"><img src="assets/timeline/Thunder, Rain & Lightning.png" alt="Thunder, Rain & Lightning" loading="lazy"></div>
     </div>
 
     <div class="timeline-node">
@@ -1401,7 +1458,7 @@
         <div class="tl-title">Roots</div>
         <p class="tl-desc">First house &mdash; imperfect, but theirs. River arrived to learn from Thunder while there was still time.</p>
       </div>
-      <div class="timeline-illus"><img src="assets/timeline/Roots.png" alt="Roots"></div>
+      <div class="timeline-illus"><img src="assets/timeline/Roots.png" alt="Roots" loading="lazy"></div>
     </div>
 
     <div class="timeline-node">
@@ -1410,7 +1467,7 @@
         <div class="tl-title">The World Stopped</div>
         <p class="tl-desc">COVID. Laura barely made it back on one of the last flights home.</p>
       </div>
-      <div class="timeline-illus"><img src="assets/timeline/The World Stopped.png" alt="The World Stopped"></div>
+      <div class="timeline-illus"><img src="assets/timeline/The World Stopped.png" alt="The World Stopped" loading="lazy"></div>
     </div>
 
     <div class="timeline-node">
@@ -1419,7 +1476,7 @@
         <div class="tl-title">The Dream House</div>
         <p class="tl-desc">Dream house from an eighty-year-old widow. Laura became a citizen. Then Thunder laid down and couldn't get up.</p>
       </div>
-      <div class="timeline-illus"><img src="assets/timeline/The Dream House.png" alt="The Dream House"></div>
+      <div class="timeline-illus"><img src="assets/timeline/The Dream House.png" alt="The Dream House" loading="lazy"></div>
     </div>
 
     <div class="timeline-node">
@@ -1446,7 +1503,7 @@
         <div class="tl-title">Doctor</div>
         <p class="tl-desc">She passed. First job as a licensed vet. Made for emergency medicine. Moved to Texas. First trip to Europe.</p>
       </div>
-      <div class="timeline-illus"><img src="assets/timeline/Doctor.png" alt="Doctor"></div>
+      <div class="timeline-illus"><img src="assets/timeline/Doctor.png" alt="Doctor" loading="lazy"></div>
     </div>
 
     <div class="timeline-node">
@@ -1455,7 +1512,7 @@
         <div class="tl-title">Drawn to Life</div>
         <p class="tl-desc">ER veterinarian. Dr. Anthony gone, after years of bonus time. Vow renewal in Puerto Rico with the people they built a life beside.</p>
       </div>
-      <div class="timeline-illus"><img src="assets/timeline/Drawn to Life.png" alt="Drawn to Life"></div>
+      <div class="timeline-illus"><img src="assets/timeline/Drawn to Life.png" alt="Drawn to Life" loading="lazy"></div>
     </div>
 
   </div>
@@ -1619,7 +1676,7 @@
       </button>
     </div>
     <div class="player-area">
-      <video id="main-player" controls playsinline preload="auto" src="videos/love-at-first-swipe.mp4"></video>
+      <video id="main-player" controls playsinline preload="metadata" src="videos/love-at-first-swipe.mp4"></video>
       <div class="player-info">
         <h3>The Last Message</h3>
         <p>How a buried Tinder match became a marriage in five months</p>
@@ -1631,7 +1688,7 @@
 <!-- FOOTER -->
 <footer>
   <a href="https://storyof.co" target="_blank"><div class="footer-brand"><strong>Story</strong><span>of</span></div></a>
-  <div class="footer-sub">Crafted with love by Daniella Koffler</div>
+  <div class="footer-sub">Crafted with love by <a href="https://storyof.co" target="_blank"><strong>Story</strong><span>of</span>.co</a></div>
 </footer>
 
 <script>
@@ -2127,6 +2184,42 @@
       }
     });
   }
+})();
+
+// Hero image loading + loading screen
+(function() {
+  const loadingScreen = document.getElementById('loading-screen');
+  const loadingBar = document.getElementById('loading-bar');
+  const heroBg = document.querySelector('.hero-bg');
+  if (!loadingScreen || !heroBg) return;
+
+  // Animate progress bar while loading
+  let progress = 0;
+  const progressInterval = setInterval(() => {
+    progress = Math.min(progress + (90 - progress) * 0.05, 90);
+    loadingBar.style.width = progress + '%';
+  }, 100);
+
+  const heroImg = new Image();
+  heroImg.src = 'assets/surprise/Josh and Laura (40).jpg';
+  heroImg.onload = function() {
+    clearInterval(progressInterval);
+    loadingBar.style.width = '100%';
+    heroBg.classList.add('loaded');
+    setTimeout(() => {
+      loadingScreen.classList.add('fade-out');
+      setTimeout(() => loadingScreen.remove(), 600);
+    }, 300);
+  };
+  // Fallback: remove loading screen after 8s even if image fails
+  setTimeout(() => {
+    if (!heroBg.classList.contains('loaded')) {
+      clearInterval(progressInterval);
+      heroBg.classList.add('loaded');
+      loadingScreen.classList.add('fade-out');
+      setTimeout(() => loadingScreen.remove(), 600);
+    }
+  }, 8000);
 })();
 </script>
 </body>
