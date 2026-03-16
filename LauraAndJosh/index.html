@@ -1856,6 +1856,7 @@
   // Check if already authenticated
   if (sessionStorage.getItem('storyof-auth') === '1') {
     gate.remove();
+    window._storyofAuthed = true;
     return;
   }
 
@@ -1867,6 +1868,8 @@
       sessionStorage.setItem('storyof-auth', '1');
       document.body.style.overflow = '';
       gate.classList.add('fade-out');
+      window._storyofAuthed = true;
+      window.dispatchEvent(new Event('storyof-auth'));
       setTimeout(() => gate.remove(), 800);
     } else {
       input.classList.add('shake');
@@ -2378,40 +2381,48 @@
   }
 })();
 
-// Hero image loading + loading screen
+// Hero image loading + loading screen (waits for password gate)
 (function() {
-  const loadingScreen = document.getElementById('loading-screen');
-  const loadingBar = document.getElementById('loading-bar');
-  const heroBg = document.querySelector('.hero-bg');
-  if (!loadingScreen || !heroBg) return;
+  function startHeroLoad() {
+    const loadingScreen = document.getElementById('loading-screen');
+    const loadingBar = document.getElementById('loading-bar');
+    const heroBg = document.querySelector('.hero-bg');
+    if (!loadingScreen || !heroBg) return;
 
-  // Animate progress bar while loading
-  let progress = 0;
-  const progressInterval = setInterval(() => {
-    progress = Math.min(progress + (90 - progress) * 0.05, 90);
-    loadingBar.style.width = progress + '%';
-  }, 100);
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      progress = Math.min(progress + (90 - progress) * 0.05, 90);
+      loadingBar.style.width = progress + '%';
+    }, 100);
 
-  const heroImg = new Image();
-  heroImg.src = 'assets/surprise/Josh and Laura (40).webp';
-  heroImg.onload = function() {
-    clearInterval(progressInterval);
-    loadingBar.style.width = '100%';
-    heroBg.classList.add('loaded');
-    setTimeout(() => {
-      loadingScreen.classList.add('fade-out');
-      setTimeout(() => loadingScreen.remove(), 600);
-    }, 300);
-  };
-  // Fallback: remove loading screen after 8s even if image fails
-  setTimeout(() => {
-    if (!heroBg.classList.contains('loaded')) {
+    const heroImg = new Image();
+    heroImg.src = 'assets/surprise/Josh and Laura (40).webp';
+    heroImg.onload = function() {
       clearInterval(progressInterval);
+      loadingBar.style.width = '100%';
       heroBg.classList.add('loaded');
-      loadingScreen.classList.add('fade-out');
-      setTimeout(() => loadingScreen.remove(), 600);
-    }
-  }, 8000);
+      setTimeout(() => {
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => loadingScreen.remove(), 600);
+      }, 300);
+    };
+    setTimeout(() => {
+      if (!heroBg.classList.contains('loaded')) {
+        clearInterval(progressInterval);
+        heroBg.classList.add('loaded');
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => loadingScreen.remove(), 600);
+      }
+    }, 8000);
+  }
+
+  // If already authed (returning visitor), start immediately
+  if (window._storyofAuthed) {
+    startHeroLoad();
+  } else {
+    // Wait for password gate to be dismissed
+    window.addEventListener('storyof-auth', startHeroLoad);
+  }
 })();
 </script>
 </body>
