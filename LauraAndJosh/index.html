@@ -1280,6 +1280,133 @@
     }
   }
 
+  /* === PASSWORD GATE === */
+  .password-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    background: #1a1408;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.8s ease;
+  }
+  .password-gate.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .gate-inner {
+    text-align: center;
+    padding: 0 2rem;
+    max-width: 420px;
+  }
+  .gate-brand {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    margin-bottom: 3rem;
+    opacity: 0.6;
+  }
+  .gate-brand strong { color: var(--cream); font-weight: 700; }
+  .gate-brand span { font-weight: 300; }
+  .gate-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 6vw, 3.2rem);
+    color: var(--cream);
+    line-height: 1.15;
+    margin-bottom: 0.6rem;
+  }
+  .gate-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+  }
+  .gate-prompt {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    margin-bottom: 1rem;
+    letter-spacing: 0.5px;
+  }
+  .gate-input-wrap {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  .gate-input {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    background: rgba(245,230,200,0.06);
+    border: 1px solid rgba(200,164,92,0.25);
+    border-radius: 6px;
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .gate-input::placeholder {
+    color: rgba(184,168,138,0.35);
+    letter-spacing: 3px;
+  }
+  .gate-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(200,164,92,0.1);
+  }
+  .gate-input.shake {
+    animation: gate-shake 0.5s ease;
+    border-color: #a85c5c;
+  }
+  @keyframes gate-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+  .gate-enter {
+    display: inline-block;
+    padding: 0.9rem 2.5rem;
+    border: 1px solid var(--gold);
+    color: var(--cream);
+    background: rgba(200,164,92,0.12);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 4px;
+  }
+  .gate-enter:hover {
+    background: var(--gold);
+    color: var(--warm-bg);
+  }
+  .gate-error {
+    font-size: 0.8rem;
+    color: #c87c5c;
+    margin-top: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-weight: 300;
+  }
+  .gate-error.visible { opacity: 1; }
+  .gate-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-bottom: 3rem;
+  }
+  .gate-divider span { width: 40px; height: 1px; background: var(--gold); opacity: 0.2; }
+  .gate-divider .gate-diamond { width: 6px; height: 6px; background: var(--gold); transform: rotate(45deg); opacity: 0.3; }
+
   /* === LOADING SCREEN === */
   .loading-screen {
     position: fixed;
@@ -1332,6 +1459,22 @@
 </style>
 </head>
 <body>
+
+<!-- PASSWORD GATE -->
+<div class="password-gate" id="password-gate">
+  <div class="gate-inner">
+    <div class="gate-brand"><strong>Story</strong><span>of</span></div>
+    <div class="gate-divider"><span></span><div class="gate-diamond"></div><span></span></div>
+    <h1 class="gate-title">Laura & Josh</h1>
+    <p class="gate-subtitle">A Private Story</p>
+    <p class="gate-prompt">Enter the password to continue</p>
+    <div class="gate-input-wrap">
+      <input type="password" class="gate-input" id="gate-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="off" autofocus>
+    </div>
+    <button class="gate-enter" id="gate-submit">Enter</button>
+    <div class="gate-error" id="gate-error">That's not it. Try again.</div>
+  </div>
+</div>
 
 <!-- LOADING SCREEN -->
 <div class="loading-screen" id="loading-screen">
@@ -1703,6 +1846,45 @@
 </footer>
 
 <script>
+// Password gate
+(function() {
+  const gate = document.getElementById('password-gate');
+  const input = document.getElementById('gate-password');
+  const btn = document.getElementById('gate-submit');
+  const err = document.getElementById('gate-error');
+  if (!gate) return;
+
+  // Check if already authenticated
+  if (sessionStorage.getItem('storyof-auth') === '1') {
+    gate.remove();
+    return;
+  }
+
+  // Prevent scrolling while gate is visible
+  document.body.style.overflow = 'hidden';
+
+  function attempt() {
+    if (input.value === 'Rayo2026') {
+      sessionStorage.setItem('storyof-auth', '1');
+      document.body.style.overflow = '';
+      gate.classList.add('fade-out');
+      setTimeout(() => gate.remove(), 800);
+    } else {
+      input.classList.add('shake');
+      err.classList.add('visible');
+      setTimeout(() => input.classList.remove('shake'), 500);
+      input.value = '';
+      input.focus();
+    }
+  }
+
+  btn.addEventListener('click', attempt);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') attempt();
+    err.classList.remove('visible');
+  });
+})();
+
 // Mobile carousel: highlight center item (for scattered-photos and story-scattered)
 (function() {
   function initCarousels() {
