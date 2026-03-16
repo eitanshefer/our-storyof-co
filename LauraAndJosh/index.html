@@ -1959,8 +1959,8 @@
     setTimeout(() => gallery.classList.remove('gallery-paused'), 3000);
   }, { passive: true });
 
-  // Mobile: auto-advance carousel instead
-  function initMobileCarousel() {
+  // Mobile: manual swipe only (no auto-scroll)
+  function initMobileGallery() {
     if (window.innerWidth > 768) {
       gallery.classList.remove('gallery-mobile-mode');
       setupAnimation();
@@ -1971,41 +1971,25 @@
     gallery.style.overflow = 'auto';
 
     const allItems = gallery.querySelectorAll('.photo-item');
-    let currentIndex = 0;
-    let mobileTimer;
 
     function updateActive() {
-      allItems.forEach((item, i) => item.classList.toggle('carousel-active', i === currentIndex));
-    }
-    updateActive();
-
-    function advance() {
-      currentIndex = (currentIndex + 1) % allItems.length;
-      const item = allItems[currentIndex];
-      const scrollLeft = item.offsetLeft - (gallery.offsetWidth / 2) + (item.offsetWidth / 2);
-      gallery.scrollTo({ left: scrollLeft, behavior: 'smooth' });
-      updateActive();
-    }
-
-    clearInterval(mobileTimer);
-    mobileTimer = setInterval(advance, 6000);
-
-    gallery.addEventListener('scroll', () => {
       const containerRect = gallery.getBoundingClientRect();
       const centerX = containerRect.left + containerRect.width / 2;
-      let closest = 0, closestDist = Infinity;
-      allItems.forEach((item, i) => {
+      let closest = null, closestDist = Infinity;
+      allItems.forEach(item => {
         const rect = item.getBoundingClientRect();
         const dist = Math.abs(rect.left + rect.width / 2 - centerX);
-        if (dist < closestDist) { closestDist = dist; closest = i; }
+        if (dist < closestDist) { closestDist = dist; closest = item; }
       });
-      currentIndex = closest;
-      updateActive();
-    }, { passive: true });
+      allItems.forEach(item => item.classList.toggle('carousel-active', item === closest));
+    }
+
+    if (allItems.length) allItems[0].classList.add('carousel-active');
+    gallery.addEventListener('scroll', updateActive, { passive: true });
   }
 
-  setTimeout(initMobileCarousel, 200);
-  window.addEventListener('resize', initMobileCarousel);
+  setTimeout(initMobileGallery, 200);
+  window.addEventListener('resize', initMobileGallery);
 })();
 
 // Timeline: fade-in on scroll + draw weaving trail
