@@ -297,13 +297,13 @@
 
   /* === GALLERY SCATTERED (horizontal scroll, organic feel) === */
   .gallery-scattered {
-    display: grid;
-    grid-template-rows: repeat(3, 180px);
-    grid-auto-flow: column dense;
-    grid-auto-columns: 200px;
-    gap: 40px 50px;
+    display: flex;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    gap: 24px;
     overflow: hidden;
     padding: 3rem 2rem;
+    height: 65vh;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
   }
@@ -311,6 +311,7 @@
 
   .gallery-scattered .photo-item {
     position: relative;
+    flex: 0 0 auto;
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     border: 3px solid rgba(245,230,200,0.15);
     border-radius: 4px;
@@ -330,29 +331,48 @@
   }
   .gallery-scattered .photo-item img {
     display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: auto;
+    height: auto;
+    max-height: 60vh;
+    max-width: 45vh;
   }
 
-  /* Varied sizes — some span 2 rows for that scattered feel */
-  .gallery-scattered .photo-item:nth-child(5n+1) { grid-row: span 2; }
-  .gallery-scattered .photo-item:nth-child(7n+3) { grid-row: span 2; }
-  .gallery-scattered .photo-item:nth-child(11n+7) { grid-row: span 2; }
+  /* Stacked photo pairs */
+  .gallery-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    max-height: 60vh;
+  }
+  /* Two-row zigzag — alternate top and bottom */
+  .gallery-pair:nth-child(odd) { align-self: flex-start; }
+  .gallery-pair:nth-child(even) { align-self: flex-end; }
+  .gallery-pair .photo-item img {
+    max-height: calc(30vh - 6px);
+    max-width: 36vh;
+  }
 
-  /* Organic rotations */
-  .gallery-scattered .photo-item:nth-child(6n+1) { transform: rotate(-3deg); }
-  .gallery-scattered .photo-item:nth-child(6n+2) { transform: rotate(2.5deg); }
-  .gallery-scattered .photo-item:nth-child(6n+3) { transform: rotate(-1.5deg); }
-  .gallery-scattered .photo-item:nth-child(6n+4) { transform: rotate(4deg); }
-  .gallery-scattered .photo-item:nth-child(6n+5) { transform: rotate(-2deg); }
-  .gallery-scattered .photo-item:nth-child(6n+6) { transform: rotate(3.5deg); }
+  /* Organic rotations — singles */
+  .gallery-scattered > .photo-item:nth-child(6n+1) { transform: rotate(-3deg); }
+  .gallery-scattered > .photo-item:nth-child(6n+2) { transform: rotate(2.5deg); }
+  .gallery-scattered > .photo-item:nth-child(6n+3) { transform: rotate(-1.5deg); }
+  .gallery-scattered > .photo-item:nth-child(6n+4) { transform: rotate(4deg); }
+  .gallery-scattered > .photo-item:nth-child(6n+5) { transform: rotate(-2deg); }
+  .gallery-scattered > .photo-item:nth-child(6n+6) { transform: rotate(3.5deg); }
 
-  /* Varied column widths */
-  .gallery-scattered .photo-item:nth-child(4n+1) { width: 220px; }
-  .gallery-scattered .photo-item:nth-child(4n+2) { width: 190px; }
-  .gallery-scattered .photo-item:nth-child(4n+3) { width: 240px; }
-  .gallery-scattered .photo-item:nth-child(4n+4) { width: 200px; }
+  /* Organic rotations — pairs */
+  .gallery-pair:nth-child(6n+1) .photo-item:first-child { transform: rotate(-2deg); }
+  .gallery-pair:nth-child(6n+1) .photo-item:last-child { transform: rotate(3deg); }
+  .gallery-pair:nth-child(6n+2) .photo-item:first-child { transform: rotate(2.5deg); }
+  .gallery-pair:nth-child(6n+2) .photo-item:last-child { transform: rotate(-1.5deg); }
+  .gallery-pair:nth-child(6n+3) .photo-item:first-child { transform: rotate(-4deg); }
+  .gallery-pair:nth-child(6n+3) .photo-item:last-child { transform: rotate(2deg); }
+  .gallery-pair:nth-child(6n+4) .photo-item:first-child { transform: rotate(1.5deg); }
+  .gallery-pair:nth-child(6n+4) .photo-item:last-child { transform: rotate(-3.5deg); }
+
 
   /* Infinite scroll animation */
   @keyframes gallery-scroll {
@@ -850,10 +870,6 @@
       scrollbar-width: none;
     }
     .gallery-scattered {
-      display: flex !important;
-      grid-template-rows: none !important;
-      grid-auto-flow: unset !important;
-      grid-auto-columns: unset !important;
       flex-direction: row;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
@@ -886,11 +902,18 @@
       position: relative !important;
       flex: 0 0 75% !important;
       width: 75% !important;
-      height: 280px !important;
+      height: auto !important;
       scroll-snap-align: center;
       transition: transform 0.4s ease, box-shadow 0.4s ease, opacity 0.4s ease, z-index 0s !important;
       opacity: 0.6;
       z-index: 1;
+    }
+    .gallery-scattered .photo-item img {
+      max-height: 50vh !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      height: auto !important;
+      object-fit: contain !important;
     }
 
     /* Random-ish rotations on non-active items for affordance */
@@ -1026,8 +1049,8 @@
       width: 88% !important;
     }
     .gallery-scattered .photo-item {
-      flex: 0 0 80% !important;
-      width: 80% !important;
+      flex: 0 0 85% !important;
+      width: 85% !important;
     }
   }
 
@@ -1924,31 +1947,116 @@
   const gallery = document.querySelector('.gallery-scattered');
   if (!gallery) return;
 
-  // Clone all items for seamless loop
-  const items = Array.from(gallery.children);
-  items.forEach(item => {
-    const clone = item.cloneNode(true);
-    clone.setAttribute('aria-hidden', 'true');
-    gallery.appendChild(clone);
-  });
+  // Group photos into vertical pairs: always portrait + landscape together.
+  // Then clone for seamless loop and start animation.
+  let arranged = false;
+  function arrangeAndAnimate() {
+    if (arranged) return;
+    arranged = true;
 
-  // Measure original content width after layout
-  function setupAnimation() {
-    // Wait for images to affect layout
-    const totalItems = items.length;
-    // Calculate the width of the original set by measuring
-    const allChildren = gallery.children;
-    let originalWidth = 0;
-    for (let i = 0; i < totalItems; i++) {
-      const style = getComputedStyle(allChildren[i]);
-      originalWidth += allChildren[i].offsetWidth + parseFloat(style.marginRight || 0);
+    if (window.innerWidth <= 768) {
+      // Mobile: no pairing, just clone and skip animation
+      cloneAndAnimate();
+      return;
     }
-    // For grid layout, measure scrollWidth / 2
-    originalWidth = gallery.scrollWidth / 2;
 
-    // Set CSS custom property for animation
-    gallery.style.setProperty('--scroll-width', originalWidth + 'px');
-    gallery.classList.add('gallery-animate');
+    const allItems = Array.from(gallery.children).filter(el => el.classList.contains('photo-item'));
+    const portraits = [];
+    const landscapes = [];
+
+    allItems.forEach(item => {
+      const img = item.querySelector('img');
+      if (img && img.naturalHeight > img.naturalWidth) {
+        portraits.push(item);
+      } else {
+        landscapes.push(item);
+      }
+    });
+
+    // All pairs, no singles. Always portrait + landscape together.
+    const result = [];
+    let pi = 0, li = 0, pairCount = 0;
+
+    // First: pair portrait + landscape until one runs out
+    while (pi < portraits.length && li < landscapes.length) {
+      const pair = document.createElement('div');
+      pair.className = 'gallery-pair';
+      if (pairCount % 2 === 0) {
+        pair.appendChild(portraits[pi++]);
+        pair.appendChild(landscapes[li++]);
+      } else {
+        pair.appendChild(landscapes[li++]);
+        pair.appendChild(portraits[pi++]);
+      }
+      result.push(pair);
+      pairCount++;
+    }
+
+    // Remaining same-orientation: pair them together (better than singles)
+    const remaining = [];
+    while (pi < portraits.length) remaining.push(portraits[pi++]);
+    while (li < landscapes.length) remaining.push(landscapes[li++]);
+    for (let r = 0; r + 1 < remaining.length; r += 2) {
+      const pair = document.createElement('div');
+      pair.className = 'gallery-pair';
+      pair.appendChild(remaining[r]);
+      pair.appendChild(remaining[r + 1]);
+      result.push(pair);
+    }
+    // If odd one left, still add it as a pair wrapper for consistency
+    if (remaining.length % 2 === 1) {
+      const pair = document.createElement('div');
+      pair.className = 'gallery-pair';
+      pair.appendChild(remaining[remaining.length - 1]);
+      result.push(pair);
+    }
+
+    gallery.innerHTML = '';
+    result.forEach(el => gallery.appendChild(el));
+    cloneAndAnimate();
+  }
+
+  function cloneAndAnimate() {
+    // Clone all items for seamless loop
+    const items = Array.from(gallery.children);
+    items.forEach(item => {
+      const clone = item.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      gallery.appendChild(clone);
+    });
+
+    if (window.innerWidth <= 768) return;
+
+    // Measure and start animation
+    requestAnimationFrame(() => {
+      const gap = 24;
+      let originalWidth = 0;
+      for (let i = 0; i < items.length; i++) {
+        originalWidth += gallery.children[i].offsetWidth + gap;
+      }
+      gallery.style.setProperty('--scroll-width', originalWidth + 'px');
+      gallery.classList.add('gallery-animate');
+    });
+  }
+
+  // Wait for images to load before arranging
+  const galleryImgs = Array.from(gallery.querySelectorAll('img'));
+  let loadedCount = 0;
+  function onImgLoad() {
+    loadedCount++;
+    if (loadedCount >= galleryImgs.length) arrangeAndAnimate();
+  }
+  galleryImgs.forEach(img => {
+    if (img.complete && img.naturalWidth > 0) { loadedCount++; }
+    else { img.addEventListener('load', onImgLoad, { once: true }); }
+  });
+  if (loadedCount >= galleryImgs.length) arrangeAndAnimate();
+  // Fallback
+  setTimeout(arrangeAndAnimate, 4000);
+
+  function setupAnimation() {
+    // Re-measure if needed on resize
+    arrangeAndAnimate();
   }
 
   // Pause on hover/touch
