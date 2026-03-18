@@ -29,6 +29,16 @@
     overflow-x: hidden;
   }
 
+  /* Texture overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
   /* === STORYOF LOGO TOP-LEFT === */
   .storyof-logo {
     position: fixed;
@@ -84,7 +94,10 @@
   /* Show on parent hover */
   .photo-item:hover .share-btn,
   .story-block:hover .share-btn,
-  .hero:hover .share-btn { opacity: 1; }
+  .hero:hover .share-btn,
+  .film-section:hover .share-btn,
+  .timeline-illus:hover .share-btn,
+  .full-image-section:hover .share-btn { opacity: 1; }
 
   /* Hero share - top right */
   .hero .share-btn {
@@ -109,6 +122,259 @@
     right: -40px;
   }
 
+  /* === SECTION STYLES === */
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-align: center;
+    margin-bottom: 1.2rem;
+    font-weight: 500;
+  }
+
+  /* === DIVIDER === */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem 0;
+  }
+  .section-divider span { width: 60px; height: 1px; background: var(--gold); opacity: 0.3; }
+  .section-divider .diamond { width: 8px; height: 8px; background: var(--gold); transform: rotate(45deg); opacity: 0.5; }
+
+  /* === SHARE MENU (Desktop) === */
+  .share-menu {
+    position: fixed;
+    z-index: 9999;
+    background: rgba(30,24,15,0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(200,164,92,0.3);
+    border-radius: 10px;
+    padding: 0.5rem 0;
+    min-width: 200px;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .share-menu.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .share-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.65rem 1.2rem;
+    background: none;
+    border: none;
+    color: var(--cream);
+    font-family: inherit;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .share-option:hover {
+    background: rgba(200,164,92,0.15);
+  }
+  .share-option svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+
+  /* Toast notification */
+  .share-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--gold);
+    color: var(--warm-bg);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    z-index: 9999;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .share-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* === PASSWORD GATE === */
+  .password-gate {
+    position: fixed;
+    inset: 0;
+    z-index: 20000;
+    background: #1a1408;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.8s ease;
+  }
+  .password-gate.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .gate-inner {
+    text-align: center;
+    padding: 0 2rem;
+    max-width: 420px;
+  }
+  .gate-brand {
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    margin-bottom: 3rem;
+    opacity: 0.6;
+  }
+  .gate-brand strong { color: var(--cream); font-weight: 700; }
+  .gate-brand span { font-weight: 300; }
+  .gate-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 6vw, 3.2rem);
+    color: var(--cream);
+    line-height: 1.15;
+    margin-bottom: 0.6rem;
+  }
+  .gate-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+  }
+  .gate-prompt {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-weight: 300;
+    margin-bottom: 1rem;
+    letter-spacing: 0.5px;
+  }
+  .gate-input-wrap {
+    position: relative;
+    margin-bottom: 1.5rem;
+  }
+  .gate-input {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    background: rgba(245,230,200,0.06);
+    border: 1px solid rgba(200,164,92,0.25);
+    border-radius: 6px;
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .gate-input::placeholder {
+    color: rgba(184,168,138,0.35);
+    letter-spacing: 3px;
+  }
+  .gate-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 20px rgba(200,164,92,0.1);
+  }
+  .gate-input.shake {
+    animation: gate-shake 0.5s ease;
+    border-color: #a85c5c;
+  }
+  @keyframes gate-shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+  .gate-enter {
+    display: inline-block;
+    padding: 0.9rem 2.5rem;
+    border: 1px solid var(--gold);
+    color: var(--cream);
+    background: rgba(200,164,92,0.12);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    border-radius: 4px;
+  }
+  .gate-enter:hover {
+    background: var(--gold);
+    color: var(--warm-bg);
+  }
+  .gate-error {
+    font-size: 0.8rem;
+    color: #c87c5c;
+    margin-top: 1rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-weight: 300;
+  }
+  .gate-error.visible { opacity: 1; }
+  .gate-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin-bottom: 3rem;
+  }
+  .gate-divider span { width: 40px; height: 1px; background: var(--gold); opacity: 0.2; }
+  .gate-divider .gate-diamond { width: 6px; height: 6px; background: var(--gold); transform: rotate(45deg); opacity: 0.3; }
+
+  /* === LOADING SCREEN === */
+  .loading-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: #1a1408;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s ease;
+  }
+  .loading-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .loading-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    color: var(--cream);
+    margin-bottom: 2rem;
+    letter-spacing: 0.03em;
+    text-align: center;
+    padding: 0 2rem;
+  }
+  .loading-bar-track {
+    width: 200px;
+    height: 2px;
+    background: rgba(200,164,92,0.15);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .loading-bar-fill {
+    width: 0%;
+    height: 100%;
+    background: var(--gold);
+    border-radius: 1px;
+    transition: width 0.3s ease;
+  }
 
   /* === HERO === */
   .hero {
@@ -126,7 +392,6 @@
   .hero-bg {
     position: absolute;
     inset: 0;
-    background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAFKADAAQAAAABAAAACwAAAAD/wAARCAALABQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9sAQwAPDw8PDw8aDw8aJBoaGiQxJCQkJDE+MTExMTE+Sz4+Pj4+PktLS0tLS0tLWlpaWlpaaWlpaWl2dnZ2dnZ2dnZ2/9sAQwESExMeHB40HBw0e1RFVHt7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7/90ABAAC/9oADAMBAAIRAxEAPwCe2uLAqrS5Ge3YVNczWQGMcYOCeP0rCt1G0mpmVWQOwy2Ryfep52tA5E9SCaUvIWBOD0qLc3vQ+Q5AJ496Zk+p/OpLP//Z');
     background-size: cover;
     background-position: center bottom;
     z-index: 0;
@@ -135,7 +400,6 @@
     transition: filter 0.5s ease, transform 0.5s ease;
   }
   .hero-bg.loaded {
-    background-image: url('assets/surprise/Josh and Laura (40).webp');
     filter: none;
     transform: scale(1);
   }
@@ -213,6 +477,11 @@
     transform: scale(1.35) rotate(0deg) !important;
     z-index: 20 !important;
     box-shadow: 0 20px 60px rgba(200,164,92,0.35);
+  }
+  .wedding-photos .photo-item:hover {
+    transform: none !important;
+    z-index: inherit !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
   }
 
   .scattered-photos .photo-item img {
@@ -294,6 +563,276 @@
   .story-scattered.single .photo-item:nth-child(1) { width: auto; max-width: 75%; top: 0; left: 50%; transform: translateX(-50%) rotate(-1.5deg); z-index: 3; }
   .story-scattered.single .photo-item:nth-child(1):hover { transform: translateX(-50%) scale(1.1) rotate(0deg) !important; }
   .story-scattered.single .photo-item:nth-child(1) img { max-height: 400px; width: auto; display: block; }
+
+  .story-section {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 6rem 2rem;
+    position: relative;
+  }
+
+  .story-section::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 80px;
+    background: linear-gradient(180deg, transparent, var(--gold));
+  }
+
+  .story-section h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--cream);
+    text-align: center;
+    margin-bottom: 4rem;
+    letter-spacing: 0.02em;
+  }
+
+  .story-block { margin-bottom: 4.5rem; }
+
+  .story-block p {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--text-dim);
+    font-weight: 300;
+    letter-spacing: 0.01em;
+  }
+
+  .story-block p + p {
+    margin-top: 1.2rem;
+  }
+
+  .story-block .chapter-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.6rem;
+    color: var(--cream);
+    margin-bottom: 1.4rem;
+    letter-spacing: 0.02em;
+    position: relative;
+    padding-left: 1.6rem;
+  }
+
+  .story-block .chapter-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0.7rem;
+    height: 2px;
+    background: var(--gold);
+  }
+
+  /* Closing / summary paragraph — italic pull-quote style */
+  .story-block.closing p {
+    font-style: italic;
+    color: var(--cream-soft);
+    font-size: 1.15rem;
+    line-height: 1.9;
+    text-align: center;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    border-top: 1px solid rgba(200,164,92,0.15);
+    padding-top: 2rem;
+  }
+
+  /* === TIMELINE === */
+  .timeline-section {
+    padding: 6rem 2rem;
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .timeline-section h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    color: var(--cream);
+    text-align: center;
+    margin-bottom: 4rem;
+    letter-spacing: 0.02em;
+  }
+
+  .timeline-trail {
+    position: relative;
+    padding: 2rem 0;
+  }
+
+  /* SVG weaving trail */
+  .timeline-trail svg.trail-path {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .timeline-trail svg.trail-path path {
+    fill: none;
+    stroke: var(--gold);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-dasharray: 8 6;
+    opacity: 0.45;
+  }
+
+  .timeline-node {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    margin-bottom: 4rem;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .timeline-node.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* X marks the spot */
+  .timeline-node::before,
+  .timeline-node::after {
+    content: '';
+    position: absolute;
+    top: 1.6rem;
+    width: 18px;
+    height: 2px;
+    background: var(--gold);
+    z-index: 2;
+    opacity: 0.7;
+  }
+  .timeline-node::before {
+    transform: translateX(-50%) rotate(45deg);
+  }
+  .timeline-node::after {
+    transform: translateX(-50%) rotate(-45deg);
+  }
+
+  /* X positions match trail weave — set by JS via custom property */
+  .timeline-node::before,
+  .timeline-node::after {
+    left: var(--x-pos, 50%);
+  }
+
+  .timeline-text {
+    width: 42%;
+    padding: 0 0.8rem;
+  }
+
+  .timeline-text .tl-year {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .timeline-text .tl-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    color: var(--cream);
+    margin-bottom: 0.6rem;
+    letter-spacing: 0.01em;
+  }
+
+  .timeline-text .tl-desc {
+    font-size: 0.92rem;
+    line-height: 1.7;
+    color: var(--text-dim);
+    font-weight: 300;
+    letter-spacing: 0.01em;
+  }
+
+  .timeline-illus {
+    width: 30%;
+    padding: 0 1rem;
+  }
+
+  .timeline-illus img {
+    width: 280px;
+    height: auto;
+    border-radius: 3px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    border: 2px solid rgba(245,230,200,0.15);
+  }
+
+  .timeline-illus .illus-placeholder {
+    width: 140px;
+    height: 105px;
+    border: 1px dashed rgba(200,164,92,0.2);
+    border-radius: 3px;
+    background: rgba(200,164,92,0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+
+  .timeline-illus .illus-placeholder span {
+    font-size: 0.6rem;
+    color: rgba(200,164,92,0.2);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* Subtle varied rotations */
+  .timeline-node:nth-child(1) .timeline-illus img,
+  .timeline-node:nth-child(1) .illus-placeholder { transform: rotate(-3deg); }
+  .timeline-node:nth-child(2) .timeline-illus img,
+  .timeline-node:nth-child(2) .illus-placeholder { transform: rotate(4deg); }
+  .timeline-node:nth-child(3) .timeline-illus img,
+  .timeline-node:nth-child(3) .illus-placeholder { transform: rotate(-5deg); }
+  .timeline-node:nth-child(4) .timeline-illus img,
+  .timeline-node:nth-child(4) .illus-placeholder { transform: rotate(2deg); }
+  .timeline-node:nth-child(5) .timeline-illus img,
+  .timeline-node:nth-child(5) .illus-placeholder { transform: rotate(-4deg); }
+  .timeline-node:nth-child(6) .timeline-illus img,
+  .timeline-node:nth-child(6) .illus-placeholder { transform: rotate(5deg); }
+  .timeline-node:nth-child(7) .timeline-illus img,
+  .timeline-node:nth-child(7) .illus-placeholder { transform: rotate(-2deg); }
+  .timeline-node:nth-child(8) .timeline-illus img,
+  .timeline-node:nth-child(8) .illus-placeholder { transform: rotate(3deg); }
+  .timeline-node:nth-child(9) .timeline-illus img,
+  .timeline-node:nth-child(9) .illus-placeholder { transform: rotate(-6deg); }
+  .timeline-node:nth-child(10) .timeline-illus img,
+  .timeline-node:nth-child(10) .illus-placeholder { transform: rotate(4deg); }
+  .timeline-node:nth-child(11) .timeline-illus img,
+  .timeline-node:nth-child(11) .illus-placeholder { transform: rotate(-3deg); }
+
+  /* Odd nodes: text left, illustration right */
+  .timeline-node:nth-child(odd) {
+    flex-direction: row;
+  }
+  .timeline-node:nth-child(odd) .timeline-text {
+    text-align: right;
+    margin-left: 0;
+    margin-right: auto;
+  }
+  .timeline-node:nth-child(odd) .timeline-illus {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  /* Even nodes: illustration left, text right */
+  .timeline-node:nth-child(even) {
+    flex-direction: row-reverse;
+  }
+  .timeline-node:nth-child(even) .timeline-text {
+    text-align: left;
+    margin-right: 0;
+    margin-left: auto;
+  }
+  .timeline-node:nth-child(even) .timeline-illus {
+    margin-right: auto;
+    margin-left: 0;
+  }
 
   /* === GALLERY SCATTERED (horizontal scroll, organic feel) === */
   .gallery-scattered {
@@ -387,103 +926,6 @@
   .gallery-scattered.gallery-paused {
     animation-play-state: paused;
   }
-
-  /* === SECTION STYLES === */
-  .section-label {
-    font-size: 0.65rem;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    color: var(--gold);
-    text-align: center;
-    margin-bottom: 1.2rem;
-    font-weight: 500;
-  }
-
-  .story-section {
-    max-width: 720px;
-    margin: 0 auto;
-    padding: 6rem 2rem;
-    position: relative;
-  }
-
-  .story-section::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 0;
-    width: 1px;
-    height: 80px;
-    background: linear-gradient(180deg, transparent, var(--gold));
-  }
-
-  .story-section h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(2rem, 5vw, 3rem);
-    color: var(--cream);
-    text-align: center;
-    margin-bottom: 4rem;
-    letter-spacing: 0.02em;
-  }
-
-  .story-block { margin-bottom: 4.5rem; }
-
-  .story-block p {
-    font-size: 1.05rem;
-    line-height: 1.85;
-    color: var(--text-dim);
-    font-weight: 300;
-    letter-spacing: 0.01em;
-  }
-
-  .story-block p + p {
-    margin-top: 1.2rem;
-  }
-
-  .story-block .chapter-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.6rem;
-    color: var(--cream);
-    margin-bottom: 1.4rem;
-    letter-spacing: 0.02em;
-    position: relative;
-    padding-left: 1.6rem;
-  }
-
-  .story-block .chapter-title::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 0.7rem;
-    height: 2px;
-    background: var(--gold);
-  }
-
-  /* Closing / summary paragraph — italic pull-quote style */
-  .story-block.closing p {
-    font-style: italic;
-    color: var(--cream-soft);
-    font-size: 1.15rem;
-    line-height: 1.9;
-    text-align: center;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-    border-top: 1px solid rgba(200,164,92,0.15);
-    padding-top: 2rem;
-  }
-
-  /* === DIVIDER === */
-  .section-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    padding: 2rem 0;
-  }
-  .section-divider span { width: 60px; height: 1px; background: var(--gold); opacity: 0.3; }
-  .section-divider .diamond { width: 8px; height: 8px; background: var(--gold); transform: rotate(45deg); opacity: 0.5; }
 
   /* === GALLERY SECTION === */
   .gallery-section {
@@ -639,49 +1081,6 @@
     line-height: 1.5;
   }
 
-  /* === SHARE MENU (Desktop) === */
-  .share-menu {
-    position: fixed;
-    z-index: 9999;
-    background: rgba(30,24,15,0.95);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(200,164,92,0.3);
-    border-radius: 10px;
-    padding: 0.5rem 0;
-    min-width: 200px;
-    opacity: 0;
-    transform: translateY(-8px);
-    pointer-events: none;
-    transition: opacity 0.2s, transform 0.2s;
-  }
-  .share-menu.visible {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: auto;
-  }
-  .share-option {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    width: 100%;
-    padding: 0.65rem 1.2rem;
-    background: none;
-    border: none;
-    color: var(--cream);
-    font-family: inherit;
-    font-size: 0.88rem;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .share-option:hover {
-    background: rgba(200,164,92,0.15);
-  }
-  .share-option svg {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-  }
-
   /* === MOBILE VIDEO OVERLAY === */
   .mob-overlay {
     position: fixed;
@@ -786,41 +1185,53 @@
     }
   }
 
-  /* Toast notification */
-  .share-toast {
-    position: fixed;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: var(--gold);
-    color: var(--warm-bg);
-    padding: 0.75rem 1.5rem;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    z-index: 9999;
-    opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    pointer-events: none;
-  }
-  .share-toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
-
   /* === FOOTER === */
   footer {
     padding: 5rem 2rem;
     text-align: center;
     border-top: 1px solid rgba(200,164,92,0.1);
-    background: #1a1408;
+    background: #000;
   }
-  footer .footer-brand { font-family: 'Inter', sans-serif; font-size: 1rem; color: var(--text-dim); margin-bottom: 0.5rem; letter-spacing: 0.05em; }
-  footer .footer-brand strong { color: var(--cream); font-weight: 700; }
-  footer .footer-brand span { font-weight: 300; }
-  footer .footer-sub { font-size: 0.75rem; color: rgba(184,168,138,0.4); font-weight: 300; letter-spacing: 0.5px; }
   footer a { color: inherit; text-decoration: none; }
-  footer a:hover { opacity: 0.7; }
+  footer a:hover { opacity: 0.8; }
+  .footer-made {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.2rem;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.04em;
+  }
+  .footer-heart {
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .footer-storyof {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.8rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.02em;
+    margin-bottom: 0.8rem;
+    transition: color 0.3s;
+  }
+  .footer-storyof:hover {
+    color: rgba(255,255,255,0.8);
+  }
+  .footer-tagline {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.35em;
+    text-transform: lowercase;
+  }
 
   /* === MOBILE RESPONSIVE === */
   @media (max-width: 768px) {
@@ -1061,202 +1472,6 @@
     }
   }
 
-  /* === TIMELINE === */
-  .timeline-section {
-    padding: 6rem 2rem;
-    max-width: 960px;
-    margin: 0 auto;
-    position: relative;
-  }
-
-  .timeline-section h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(2rem, 5vw, 3rem);
-    color: var(--cream);
-    text-align: center;
-    margin-bottom: 4rem;
-    letter-spacing: 0.02em;
-  }
-
-  .timeline-trail {
-    position: relative;
-    padding: 2rem 0;
-  }
-
-  /* SVG weaving trail */
-  .timeline-trail svg.trail-path {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .timeline-trail svg.trail-path path {
-    fill: none;
-    stroke: var(--gold);
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-dasharray: 8 6;
-    opacity: 0.45;
-  }
-
-  .timeline-node {
-    display: flex;
-    align-items: flex-start;
-    position: relative;
-    margin-bottom: 4rem;
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
-  }
-
-  .timeline-node.fade-in {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* X marks the spot */
-  .timeline-node::before,
-  .timeline-node::after {
-    content: '';
-    position: absolute;
-    top: 1.6rem;
-    width: 18px;
-    height: 2px;
-    background: var(--gold);
-    z-index: 2;
-    opacity: 0.7;
-  }
-  .timeline-node::before {
-    transform: translateX(-50%) rotate(45deg);
-  }
-  .timeline-node::after {
-    transform: translateX(-50%) rotate(-45deg);
-  }
-
-  /* X positions match trail weave — set by JS via custom property */
-  .timeline-node::before,
-  .timeline-node::after {
-    left: var(--x-pos, 50%);
-  }
-
-  .timeline-text {
-    width: 42%;
-    padding: 0 0.8rem;
-  }
-
-  .timeline-text .tl-year {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.1rem;
-    color: var(--gold);
-    margin-bottom: 0.5rem;
-    letter-spacing: 0.05em;
-  }
-
-  .timeline-text .tl-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.3rem;
-    color: var(--cream);
-    margin-bottom: 0.6rem;
-    letter-spacing: 0.01em;
-  }
-
-  .timeline-text .tl-desc {
-    font-size: 0.92rem;
-    line-height: 1.7;
-    color: var(--text-dim);
-    font-weight: 300;
-    letter-spacing: 0.01em;
-  }
-
-  .timeline-illus {
-    width: 30%;
-    padding: 0 1rem;
-  }
-
-  .timeline-illus img {
-    width: 280px;
-    height: auto;
-    border-radius: 3px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-    border: 2px solid rgba(245,230,200,0.15);
-  }
-
-  .timeline-illus .illus-placeholder {
-    width: 140px;
-    height: 105px;
-    border: 1px dashed rgba(200,164,92,0.2);
-    border-radius: 3px;
-    background: rgba(200,164,92,0.03);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-  }
-
-  .timeline-illus .illus-placeholder span {
-    font-size: 0.6rem;
-    color: rgba(200,164,92,0.2);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
-
-  /* Subtle varied rotations */
-  .timeline-node:nth-child(1) .timeline-illus img,
-  .timeline-node:nth-child(1) .illus-placeholder { transform: rotate(-3deg); }
-  .timeline-node:nth-child(2) .timeline-illus img,
-  .timeline-node:nth-child(2) .illus-placeholder { transform: rotate(4deg); }
-  .timeline-node:nth-child(3) .timeline-illus img,
-  .timeline-node:nth-child(3) .illus-placeholder { transform: rotate(-5deg); }
-  .timeline-node:nth-child(4) .timeline-illus img,
-  .timeline-node:nth-child(4) .illus-placeholder { transform: rotate(2deg); }
-  .timeline-node:nth-child(5) .timeline-illus img,
-  .timeline-node:nth-child(5) .illus-placeholder { transform: rotate(-4deg); }
-  .timeline-node:nth-child(6) .timeline-illus img,
-  .timeline-node:nth-child(6) .illus-placeholder { transform: rotate(5deg); }
-  .timeline-node:nth-child(7) .timeline-illus img,
-  .timeline-node:nth-child(7) .illus-placeholder { transform: rotate(-2deg); }
-  .timeline-node:nth-child(8) .timeline-illus img,
-  .timeline-node:nth-child(8) .illus-placeholder { transform: rotate(3deg); }
-  .timeline-node:nth-child(9) .timeline-illus img,
-  .timeline-node:nth-child(9) .illus-placeholder { transform: rotate(-6deg); }
-  .timeline-node:nth-child(10) .timeline-illus img,
-  .timeline-node:nth-child(10) .illus-placeholder { transform: rotate(4deg); }
-  .timeline-node:nth-child(11) .timeline-illus img,
-  .timeline-node:nth-child(11) .illus-placeholder { transform: rotate(-3deg); }
-
-  /* Odd nodes: text left, illustration right */
-  .timeline-node:nth-child(odd) {
-    flex-direction: row;
-  }
-  .timeline-node:nth-child(odd) .timeline-text {
-    text-align: right;
-    margin-left: 0;
-    margin-right: auto;
-  }
-  .timeline-node:nth-child(odd) .timeline-illus {
-    margin-left: auto;
-    margin-right: 0;
-  }
-
-  /* Even nodes: illustration left, text right */
-  .timeline-node:nth-child(even) {
-    flex-direction: row-reverse;
-  }
-  .timeline-node:nth-child(even) .timeline-text {
-    text-align: left;
-    margin-right: 0;
-    margin-left: auto;
-  }
-  .timeline-node:nth-child(even) .timeline-illus {
-    margin-right: auto;
-    margin-left: 0;
-  }
-
-
   /* Mobile timeline */
   @media (max-width: 768px) {
     .timeline-trail svg.trail-path {
@@ -1310,204 +1525,121 @@
     }
   }
 
-  /* === PASSWORD GATE === */
-  .password-gate {
+  /* === LIGHTBOX === */
+  .lightbox-overlay {
+    display: none;
     position: fixed;
     inset: 0;
-    z-index: 20000;
-    background: #1a1408;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.8s ease;
-  }
-  .password-gate.fade-out {
-    opacity: 0;
-    pointer-events: none;
-  }
-  .gate-inner {
-    text-align: center;
-    padding: 0 2rem;
-    max-width: 420px;
-  }
-  .gate-brand {
-    font-family: 'Inter', sans-serif;
-    font-size: 1rem;
-    color: var(--text-dim);
-    letter-spacing: 0.05em;
-    margin-bottom: 3rem;
-    opacity: 0.6;
-  }
-  .gate-brand strong { color: var(--cream); font-weight: 700; }
-  .gate-brand span { font-weight: 300; }
-  .gate-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(2.2rem, 6vw, 3.2rem);
-    color: var(--cream);
-    line-height: 1.15;
-    margin-bottom: 0.6rem;
-  }
-  .gate-subtitle {
-    font-size: 0.95rem;
-    color: var(--text-dim);
-    font-weight: 300;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 3rem;
-  }
-  .gate-prompt {
-    font-size: 0.85rem;
-    color: var(--text-dim);
-    font-weight: 300;
-    margin-bottom: 1rem;
-    letter-spacing: 0.5px;
-  }
-  .gate-input-wrap {
-    position: relative;
-    margin-bottom: 1.5rem;
-  }
-  .gate-input {
-    width: 100%;
-    padding: 1rem 1.2rem;
-    background: rgba(245,230,200,0.06);
-    border: 1px solid rgba(200,164,92,0.25);
-    border-radius: 6px;
-    color: var(--cream);
-    font-family: 'Inter', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    text-align: center;
-    outline: none;
-    transition: border-color 0.3s, box-shadow 0.3s;
-  }
-  .gate-input::placeholder {
-    color: rgba(184,168,138,0.35);
-    letter-spacing: 3px;
-  }
-  .gate-input:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 20px rgba(200,164,92,0.1);
-  }
-  .gate-input.shake {
-    animation: gate-shake 0.5s ease;
-    border-color: #a85c5c;
-  }
-  @keyframes gate-shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-5px); }
-    80% { transform: translateX(5px); }
-  }
-  .gate-enter {
-    display: inline-block;
-    padding: 0.9rem 2.5rem;
-    border: 1px solid var(--gold);
-    color: var(--cream);
-    background: rgba(200,164,92,0.12);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.3s;
-    border-radius: 4px;
-  }
-  .gate-enter:hover {
-    background: var(--gold);
-    color: var(--warm-bg);
-  }
-  .gate-error {
-    font-size: 0.8rem;
-    color: #c87c5c;
-    margin-top: 1rem;
-    opacity: 0;
-    transition: opacity 0.3s;
-    font-weight: 300;
-  }
-  .gate-error.visible { opacity: 1; }
-  .gate-divider {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
-    margin-bottom: 3rem;
-  }
-  .gate-divider span { width: 40px; height: 1px; background: var(--gold); opacity: 0.2; }
-  .gate-divider .gate-diamond { width: 6px; height: 6px; background: var(--gold); transform: rotate(45deg); opacity: 0.3; }
-
-  /* === LOADING SCREEN === */
-  .loading-screen {
-    position: fixed;
-    inset: 0;
+    background: rgba(0,0,0,0.88);
     z-index: 10000;
-    background: #1a1408;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.6s ease;
-  }
-  .loading-screen.fade-out {
-    opacity: 0;
-    pointer-events: none;
-  }
-  .loading-text {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.2rem;
-    color: var(--cream);
-    margin-bottom: 2rem;
-    letter-spacing: 0.03em;
-    text-align: center;
-    padding: 0 2rem;
-  }
-  .loading-bar-track {
-    width: 200px;
-    height: 2px;
-    background: rgba(200,164,92,0.15);
-    border-radius: 1px;
+    cursor: pointer;
     overflow: hidden;
   }
-  .loading-bar-fill {
-    width: 0%;
-    height: 100%;
-    background: var(--gold);
-    border-radius: 1px;
-    transition: width 0.3s ease;
+  .lightbox-overlay.active {
+    display: block;
   }
-
-  /* Texture overlay */
-  body::after {
-    content: '';
-    position: fixed;
+  .lightbox-close {
+    position: absolute;
+    top: 22px;
+    left: 24px;
+    width: 46px;
+    height: 46px;
+    background: rgba(255,255,255,0.08);
+    border: 1.5px solid rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10002;
+    transition: background 0.25s, transform 0.25s;
+  }
+  .lightbox-close:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.1);
+  }
+  .lightbox-close svg {
+    width: 22px;
+    height: 22px;
+    stroke: #fff;
+    stroke-width: 2.5;
+    fill: none;
+    stroke-linecap: round;
+  }
+  .lightbox-track {
+    position: absolute;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    display: flex;
+    align-items: center;
+    justify-content: center;
     pointer-events: none;
-    z-index: 9999;
+  }
+  .lightbox-slide {
+    position: absolute;
+    transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+                left 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+                top 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+    cursor: pointer;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.6);
+    border: 3px solid rgba(245,230,200,0.12);
+  }
+  .lightbox-slide img {
+    display: block;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .lightbox-slide.lb-center {
+    cursor: default;
+    z-index: 3;
+    border-color: rgba(245,230,200,0.2);
+    box-shadow: 0 16px 70px rgba(0,0,0,0.7);
+  }
+  .lightbox-slide.lb-prev,
+  .lightbox-slide.lb-next {
+    z-index: 2;
+    opacity: 0.55;
+    cursor: pointer;
+  }
+  .lightbox-slide.lb-prev:hover,
+  .lightbox-slide.lb-next:hover {
+    opacity: 0.8;
+  }
+  .lightbox-slide.lb-hidden {
+    z-index: 1;
+    opacity: 0;
+    pointer-events: none;
   }
 </style>
 </head>
 <body>
+<!-- LIGHTBOX OVERLAY -->
+<div class="lightbox-overlay" id="lightbox">
+  <div class="lightbox-close" id="lightbox-close"><svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></div>
+  <div class="lightbox-track" id="lightbox-track"></div>
+</div>
 
 <!-- PASSWORD GATE -->
 <div class="password-gate" id="password-gate">
   <div class="gate-inner">
     <div class="gate-brand"><strong>Story</strong><span>of</span></div>
     <div class="gate-divider"><span></span><div class="gate-diamond"></div><span></span></div>
-    <h1 class="gate-title">Laura & Josh</h1>
-    <p class="gate-prompt">Enter the password to continue</p>
+    <h1 class="gate-title" data-editable="sections[0].title">Laura & Josh</h1>
+    <p class="gate-prompt" data-editable="sections[0].prompt">Enter the password to continue</p>
     <div class="gate-input-wrap">
       <input type="password" class="gate-input" id="gate-password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="off" autofocus>
     </div>
     <button class="gate-enter" id="gate-submit">Enter</button>
-    <div class="gate-error" id="gate-error">That's not it. Try again.</div>
+    <div class="gate-error" id="gate-error" data-editable="sections[0].errorText">That's not it. Try again.</div>
   </div>
 </div>
 
 <!-- LOADING SCREEN -->
 <div class="loading-screen" id="loading-screen">
-  <div class="loading-text">Bringing you the story of Laura & Josh...</div>
+  <div class="loading-text" data-editable="sections[1].text">Bringing you the story of Laura & Josh...</div>
   <div class="loading-bar-track"><div class="loading-bar-fill" id="loading-bar"></div></div>
 </div>
 
@@ -1515,189 +1647,197 @@
 <a href="https://storyof.co" class="storyof-logo" target="_blank"><strong>Story</strong><span>of</span></a>
 
 <!-- HERO -->
+<style>
+  .hero-bg {
+    background-image: url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAFKADAAQAAAABAAAACwAAAAD/wAARCAALABQDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9sAQwAPDw8PDw8aDw8aJBoaGiQxJCQkJDE+MTExMTE+Sz4+Pj4+PktLS0tLS0tLWlpaWlpaaWlpaWl2dnZ2dnZ2dnZ2/9sAQwESExMeHB40HBw0e1RFVHt7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7e3t7/90ABAAC/9oADAMBAAIRAxEAPwCe2uLAqrS5Ge3YVNczWQGMcYOCeP0rCt1G0mpmVWQOwy2Ryfep52tA5E9SCaUvIWBOD0qLc3vQ+Q5AJ496Zk+p/OpLP//Z');
+  }
+  .hero-bg.loaded {
+    background-image: url('assets/surprise/Josh and Laura (40).webp');
+    filter: none;
+    transform: scale(1);
+  }
+
+  /* === FILM SECTION === */
+  .film-section {
+    position: relative;
+    width: 100%;
+    background: var(--warm-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .film-section video {
+    width: 80%;
+    max-height: 90vh;
+    display: block;
+    outline: none;
+    border-radius: 6px;
+  }
+</style>
 <section class="hero">
   <div class="hero-bg"></div>
   <div class="hero-overlay"></div>
   <div class="share-btn" title="Share this story"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
-  <h1>Laura & Josh</h1>
-  <p class="subtitle">Ten Years of Choosing Each Other</p>
-  <a href="#" class="cta-button">Watch the Film</a>
+  <h1 data-editable="sections[3].title">Laura & Josh</h1>
+  <p class="subtitle" data-editable="sections[3].subtitle">Ten Years of Choosing Each Other</p>
+  <a href="#film" class="cta-button" data-editable="sections[3].cta.text" id="watch-film-btn">Watch the Film</a>
+</section>
+
+<!-- THE FILM -->
+<section class="film-section" id="film" style="margin-top: 30px; position: relative;">
+  <video id="film-video" controls preload="metadata" playsinline>
+    <source src="assets/film.mp4" type="video/mp4">
+  </video>
+  <div class="share-btn" title="Share" style="top: 12px; right: 12px;"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
 </section>
 
 <!-- FILM FRAMES - SCATTERED ON DESK -->
 <section style="padding: 4rem 0;">
-  <div class="section-label">Frames from the Film</div>
+  <div class="section-label" data-editable="sections[4].label">Frames from the Film</div>
   <div class="scattered-photos">
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (42).webp" alt="Film frame"><div class="caption">Through every storm, side by side</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (43).webp" alt="Film frame"><div class="caption">She never stopped chasing the horizon</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (44).webp" alt="Film frame"><div class="caption">Thunder &mdash; the one who was there for all of it</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (45).webp" alt="Film frame"><div class="caption">One last message before quitting the app</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (46).webp" alt="Film frame"><div class="caption">Ten years of choosing each other</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (47).webp" alt="Film frame"><div class="caption">Thunder, Rain, and Lightning &mdash; the storm family</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (42).webp" alt="Film frame"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (43).webp" alt="Film frame"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (44).webp" alt="Film frame"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (45).webp" alt="Film frame"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (46).webp" alt="Film frame"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item"><img src="assets/film-art/Josh and Laura (47).webp" alt="Film frame"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
   </div>
 </section>
 
 <!-- THE STORY -->
 <section class="story-section">
-  <div class="section-label">Their Journey</div>
-  <h2>The Story</h2>
+  <div class="section-label" data-editable="sections[5].label">Their Journey</div>
+  <h2 data-editable="sections[5].title">The Story</h2>
 
   <div class="story-block">
     <div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
-    <div class="chapter-title">Love at First Swipe</div>
-    <p>He had seven matches. She had a thousand. His first message got buried. About to quit the app, he sent one last round &mdash; a shot in the dark. She'd just cleared her inbox. His was the only one left. She clicked because of a sea lion kissing his cheek and a dog named Thunder on his back.</p>
-    <p>Six weeks of Skype before she'd agree to meet. Their first date was supposed to be TopGolf &mdash; six-hour wait &mdash; so they ended up at World of Beer. Neither of them drinks beer. Then karaoke. He sang. He pulled her up to dance. She hated all of it. After that night, they were together every day. Married five months later.</p>
+    <p data-editable="sections[5].chapters[0].paragraphs[0]">Josh and Laura have spent ten years building a life that looks from the outside, like a series of climbs. New cities. New setbacks. New animals to name after weather. Thunder was Josh's dog, Lluvia was Laura's &mdash; rain, in her language, and felt like a sign. Then Rayo the fearless cat. The Then River. Storm Family, they called them.</p>
+    <p data-editable="sections[5].chapters[0].paragraphs[1]"><span style="display:block;text-align:center">This film is the knot in the rope. The fixed point. Ten years in.</span></p>
   </div>
 
-  <div class="story-scattered single">
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (45).webp" alt="Josh and Laura meeting"><div class="caption">Five months from the first date to tying the knot</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-  </div>
+</section>
 
-  <div class="story-block">
-    <div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
-    <div class="chapter-title">Year One</div>
-    <p>His company shut down without warning. They were newly married, living with his sisters, eating chicken and potatoes every night. His father passed away at fifty-eight &mdash; they weren't close, but the loss left a quiet weight. The silver coins he left behind? Josh's siblings gave their share so Josh and Laura could hire an immigration lawyer.</p>
-    <p>By the end of that year, he'd found the best job of his life. All the way down, all the way up &mdash; in twelve months.</p>
-  </div>
-
-  <div class="story-scattered pair">
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (42).webp" alt="Through it all, together"><div class="caption">Through every storm, side by side</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-    <div class="photo-item"><img src="assets/film-art/Josh and Laura (43).webp" alt="Building a life"><div class="caption">The view is better when you've earned it</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-  </div>
-
-  <div class="story-block">
-    <div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
-    <div class="chapter-title">Thunder, Rain &amp; Lightning</div>
-    <p>His dog was Thunder &mdash; red fur, golden eyes, his best friend since his brother left for Iraq. Her dog was Lluvia &mdash; Rain in Spanish &mdash; a German Shepherd she'd had since she was nine. Thunder and Rain. It felt like a sign before they even understood it.</p>
-    <p>They flew to Colombia so Josh could meet Laura's mom. He met Lluvia too &mdash; seventeen years old, near the end. Shortly after they came home, she was gone. When the grief softened, they got a fearless little cat and named him Rayo &mdash; Lightning. Thunder, Rain, and Lightning. The storm family.</p>
-  </div>
-
-  <div class="story-scattered single">
-    <div class="photo-item"><img src="assets/photos/illustrated-wedding-couple.webp" alt="Josh and Laura illustrated"><div class="caption">An island in Colombia, five months after the first date</div><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
-  </div>
-
-  <div class="story-block">
-    <div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
-    <div class="chapter-title">The Highs and the Heartbreaks</div>
-    <p>A dream house with twenty-one-foot ceilings, sold to them by an eighty-year-old widow who wanted a couple like them to have it. Laura becoming a citizen the same month &mdash; celebrated with a rooftop party and a gloriously trashy American one with mullet wigs and flag onesies.</p>
-    <p>Then Thunder laid down and couldn't get up. River searched the house for him for days.</p>
-    <p>Laura failed the vet licensing exam &mdash; twice. One attempt left. A car accident. A tumor. On her third and final try, she passed. She became the doctor she'd crossed a continent to be.</p>
-  </div>
-
-  <div class="story-block">
-    <div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
-    <div class="chapter-title">Ten Years</div>
-    <p>Dr. Anthony &mdash; the vet who gave Laura her first American job, who believed in her first &mdash; got years he wasn't supposed to have. In year ten, he was gone. Laura barely made it to his room in time.</p>
-    <p>Now they're renewing their vows on a beach in Puerto Rico, with seven couples who became family along the way. The first time, they said these words in front of the people they came from. This time, it's the people they built a life beside.</p>
-  </div>
+<!-- FULL IMAGE -->
+<section class="full-image-section" style="padding: 2rem 0; display: flex; justify-content: center; position: relative;">
+  <img src="assets/photos/wedding-couple-illustrated.png" alt="Josh and Laura illustrated" style="width: 90%; max-width: 90%; height: auto; display: block; border-radius: 6px;">
+  <div class="share-btn" title="Share" style="top: 12px; right: 7%;"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
 </section>
 
 <!-- TIMELINE -->
 <section class="timeline-section">
-  <div class="section-label">The Journey</div>
-  <h2>Ten Years</h2>
+  <div class="section-label" data-editable="sections[7].label">The Journey</div>
+  <h2 data-editable="sections[7].title">Ten Years</h2>
 
   <div class="timeline-trail">
 
     <div class="timeline-node">
       <div class="timeline-text">
-        <div class="tl-year">How They Met</div>
-        <div class="tl-title">A Shot in the Dark</div>
-        <p class="tl-desc">One last message before quitting the app. A sea lion photo, a dog named Thunder, and married five months later.</p>
+        <div class="tl-year" data-editable="sections[7].nodes[0].year">How They Met</div>
+        <div class="tl-title" data-editable="sections[7].nodes[0].title">A Shot in the Dark</div>
+        <p class="tl-desc" data-editable="sections[7].nodes[0].desc">One last message before quitting the app. A sea lion photo, a dog named Thunder, and married five months later.</p>
       </div>
       <div class="timeline-illus"><img src="assets/timeline/A Shot in the Dark.webp" alt="A Shot in the Dark"></div>
     </div>
 
     <div class="timeline-node">
       <div class="timeline-text">
-        <div class="tl-year">Year 1</div>
-        <div class="tl-title">All the Way Down, All the Way Up</div>
-        <p class="tl-desc">Job loss, silver coins for an immigration lawyer. By December &mdash; the best financial year of his life.</p>
+        <div class="tl-year" data-editable="sections[7].nodes[1].year">Year 1</div>
+        <div class="tl-title" data-editable="sections[7].nodes[1].title">All the Way Down, All the Way Up</div>
+        <p class="tl-desc" data-editable="sections[7].nodes[1].desc">Job loss, silver coins for an immigration lawyer. By December &mdash; the best financial year of his life.</p>
       </div>
       <div class="timeline-illus"><img src="assets/timeline/All the Way Down, All the Way Up.webp" alt="All the Way Down, All the Way Up"></div>
     </div>
 
     <div class="timeline-node">
       <div class="timeline-text">
-        <div class="tl-year">Year 2</div>
-        <div class="tl-title">Colombia</div>
-        <p class="tl-desc">Josh met Laura's mother and Lluvia &mdash; her dog since she was nine. Then Lluvia was gone. First apartment together.</p>
+        <div class="tl-year" data-editable="sections[7].nodes[2].year">Year 2</div>
+        <div class="tl-title" data-editable="sections[7].nodes[2].title">Colombia</div>
+        <p class="tl-desc" data-editable="sections[7].nodes[2].desc">Josh met Laura's mother and Lluvia &mdash; her dog since she was nine. Then Lluvia was gone. First apartment together.</p>
       </div>
       <div class="timeline-illus"><img src="assets/timeline/Colombia.webp" alt="Colombia"></div>
     </div>
 
     <div class="timeline-node">
       <div class="timeline-text">
-        <div class="tl-year">Year 3</div>
-        <div class="tl-title">Thunder, Rain &amp; Lightning</div>
-        <p class="tl-desc">A fearless kitten named Rayo &mdash; Lightning. Thunder, Rain, and Lightning. The storm family was complete.</p>
+        <div class="tl-year" data-editable="sections[7].nodes[3].year">Year 3</div>
+        <div class="tl-title" data-editable="sections[7].nodes[3].title">Thunder, Rain &amp; Lightning</div>
+        <p class="tl-desc" data-editable="sections[7].nodes[3].desc">A fearless kitten named Rayo &mdash; Lightning. Thunder, Rain, and Lightning. The storm family was complete.</p>
       </div>
-      <div class="timeline-illus"><img src="assets/timeline/Thunder, Rain & Lightning.webp" alt="Thunder, Rain & Lightning"></div>
+      <div class="timeline-illus"><img src="assets/timeline/Thunder, Rain & Lightning.webp" alt="Thunder, Rain &amp; Lightning"></div>
     </div>
 
     <div class="timeline-node">
       <div class="timeline-text">
-        <div class="tl-year">Year 4</div>
-        <div class="tl-title">Roots</div>
-        <p class="tl-desc">First house &mdash; imperfect, but theirs. River arrived to learn from Thunder while there was still time.</p>
+        <div class="tl-year" data-editable="sections[7].nodes[4].year">Year 4</div>
+        <div class="tl-title" data-editable="sections[7].nodes[4].title">Roots</div>
+        <p class="tl-desc" data-editable="sections[7].nodes[4].desc">First house &mdash; imperfect, but theirs. River arrived to learn from Thunder while there was still time.</p>
       </div>
       <div class="timeline-illus"><img src="assets/timeline/Roots.webp" alt="Roots"></div>
     </div>
 
     <div class="timeline-node">
       <div class="timeline-text">
-        <div class="tl-year">Year 5</div>
-        <div class="tl-title">The World Stopped</div>
-        <p class="tl-desc">COVID. Laura barely made it back on one of the last flights home.</p>
+        <div class="tl-year" data-editable="sections[7].nodes[5].year">Year 5</div>
+        <div class="tl-title" data-editable="sections[7].nodes[5].title">The World Stopped</div>
+        <p class="tl-desc" data-editable="sections[7].nodes[5].desc">COVID. Laura barely made it back on one of the last flights home.</p>
       </div>
       <div class="timeline-illus"><img src="assets/timeline/The World Stopped.webp" alt="The World Stopped"></div>
     </div>
 
     <div class="timeline-node">
       <div class="timeline-text">
-        <div class="tl-year">Year 6</div>
-        <div class="tl-title">The Dream House</div>
-        <p class="tl-desc">Dream house from an eighty-year-old widow. Laura became a citizen. Then Thunder laid down and couldn't get up.</p>
+        <div class="tl-year" data-editable="sections[7].nodes[6].year">Year 6</div>
+        <div class="tl-title" data-editable="sections[7].nodes[6].title">The Dream House</div>
+        <p class="tl-desc" data-editable="sections[7].nodes[6].desc">Dream house from an eighty-year-old widow. Laura became a citizen. Then Thunder laid down and couldn't get up.</p>
       </div>
       <div class="timeline-illus"><img src="assets/timeline/The Dream House.webp" alt="The Dream House"></div>
     </div>
 
     <div class="timeline-node">
       <div class="timeline-text">
-        <div class="tl-year">Year 7</div>
-        <div class="tl-title">Six out of Seven</div>
-        <p class="tl-desc">Six of seven exam sections passed. All seven required. A car accident. A tumor. They moved to Reno.</p>
+        <div class="tl-year" data-editable="sections[7].nodes[7].year">Year 7</div>
+        <div class="tl-title" data-editable="sections[7].nodes[7].title">Six out of Seven</div>
+        <p class="tl-desc" data-editable="sections[7].nodes[7].desc">Six of seven exam sections passed. All seven required. A car accident. A tumor. They moved to Reno.</p>
       </div>
-      <div class="timeline-illus"><div class="illus-placeholder"><span>Illustration</span></div></div>
+      <div class="timeline-illus"><img src="assets/timeline/Six out of Seven.png" alt="Six out of Seven"></div>
     </div>
 
     <div class="timeline-node">
       <div class="timeline-text">
-        <div class="tl-year">Year 8</div>
-        <div class="tl-title">One Attempt Left</div>
-        <p class="tl-desc">Failed again. One try left. A specialist looked once and said: &ldquo;This is why you have failed.&rdquo;</p>
+        <div class="tl-year" data-editable="sections[7].nodes[8].year">Year 8</div>
+        <div class="tl-title" data-editable="sections[7].nodes[8].title">One Attempt Left</div>
+        <p class="tl-desc" data-editable="sections[7].nodes[8].desc">Failed again. One try left. A specialist looked once and said: &ldquo;This is why you have failed.&rdquo;</p>
       </div>
-      <div class="timeline-illus"><div class="illus-placeholder"><span>Illustration</span></div></div>
+      <div class="timeline-illus"><img src="assets/timeline/One Attempt Left.png" alt="One Attempt Left"></div>
     </div>
 
     <div class="timeline-node">
       <div class="timeline-text">
-        <div class="tl-year">Year 9</div>
-        <div class="tl-title">Doctor</div>
-        <p class="tl-desc">She passed. First job as a licensed vet. Made for emergency medicine. Moved to Texas. First trip to Europe.</p>
+        <div class="tl-year" data-editable="sections[7].nodes[9].year">Year 9</div>
+        <div class="tl-title" data-editable="sections[7].nodes[9].title">Doctor</div>
+        <p class="tl-desc" data-editable="sections[7].nodes[9].desc">She passed. First job as a licensed vet. Made for emergency medicine. Moved to Texas. First trip to Europe.</p>
       </div>
       <div class="timeline-illus"><img src="assets/timeline/Doctor.webp" alt="Doctor"></div>
     </div>
 
     <div class="timeline-node">
       <div class="timeline-text">
-        <div class="tl-year">Year 10</div>
-        <div class="tl-title">Drawn to Life</div>
-        <p class="tl-desc">ER veterinarian. Dr. Anthony gone, after years of bonus time. Vow renewal in Puerto Rico with the people they built a life beside.</p>
+        <div class="tl-year" data-editable="sections[7].nodes[10].year">Year 10</div>
+        <div class="tl-title" data-editable="sections[7].nodes[10].title">Drawn to Life</div>
+        <p class="tl-desc" data-editable="sections[7].nodes[10].desc">ER veterinarian. Dr. Anthony gone, after years of bonus time. Vow renewal in Puerto Rico with the people they built a life beside.</p>
       </div>
       <div class="timeline-illus"><img src="assets/timeline/Drawn to Life.webp" alt="Drawn to Life"></div>
     </div>
 
+  </div>
+</section>
+
+<!-- WEDDING PHOTOS -->
+<section style="padding: 3rem 0;">
+  <div class="scattered-photos wedding-photos" style="min-height: 420px;">
+    <div class="photo-item" style="width: 44%; top: 0; left: 5%; transform: rotate(-2deg); z-index: 3; cursor: default;"><img src="assets/photos/wedding-group.png" alt="Wedding group photo"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
+    <div class="photo-item" style="width: 25.6%; top: 20px; right: 8%; left: auto; transform: rotate(3deg); z-index: 4; cursor: default;"><img src="assets/photos/wedding-couple.png" alt="Wedding couple"><div class="share-btn" title="Share"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div></div>
   </div>
 </section>
 
@@ -1810,59 +1950,59 @@
 
 <!-- MEDIA GALLERY -->
 <section class="media-section">
-  <div class="section-label">Behind the Story</div>
-  <h2>Voices & Moments</h2>
-  <p class="section-desc">Interviews, archive footage, and excerpts from the film</p>
+  <div class="section-label" data-editable="sections[11].label">Behind the Story</div>
+  <h2 data-editable="sections[11].title">Voices & Moments</h2>
+  <p class="section-desc" data-editable="sections[11].desc">Interviews, archive footage, and excerpts from the film</p>
   <div class="media-player-layout">
     <div class="playlist">
       <button class="playlist-item active" data-src="videos/love-at-first-swipe.mp4" data-title="The Last Message" data-desc="How a buried Tinder match became a marriage in five months">
         <span class="playlist-num">1</span>
         <div class="playlist-text">
-          <div class="playlist-title">The Last Message</div>
-          <div class="playlist-sub">How a buried Tinder match became a marriage</div>
+          <div class="playlist-title" data-editable="sections[11].videos[0].title">The Last Message</div>
+          <div class="playlist-sub" data-editable="sections[11].videos[0].sub">How a buried Tinder match became a marriage</div>
         </div>
       </button>
       <button class="playlist-item" data-src="videos/no-numbers-between-zero-and-ten.mp4" data-title="Year One" data-desc="Job loss, silver coins, and choosing to stay">
         <span class="playlist-num">2</span>
         <div class="playlist-text">
-          <div class="playlist-title">Year One</div>
-          <div class="playlist-sub">Job loss, silver coins, and choosing to stay</div>
+          <div class="playlist-title" data-editable="sections[11].videos[1].title">Year One</div>
+          <div class="playlist-sub" data-editable="sections[11].videos[1].sub">Job loss, silver coins, and choosing to stay</div>
         </div>
       </button>
       <button class="playlist-item" data-src="videos/meeting-lauras-family-in-colombia.mp4" data-title="Thunder &amp; Lluvia" data-desc="The dogs who brought them together">
         <span class="playlist-num">3</span>
         <div class="playlist-text">
-          <div class="playlist-title">Thunder &amp; Lluvia</div>
-          <div class="playlist-sub">The dogs who brought them together</div>
+          <div class="playlist-title" data-editable="sections[11].videos[2].title">Thunder &amp; Lluvia</div>
+          <div class="playlist-sub" data-editable="sections[11].videos[2].sub">The dogs who brought them together</div>
         </div>
       </button>
       <button class="playlist-item" data-src="videos/dr-anthony.mp4" data-title="Dr. Anthony" data-desc="The man who gave Laura her American start">
         <span class="playlist-num">4</span>
         <div class="playlist-text">
-          <div class="playlist-title">Dr. Anthony</div>
-          <div class="playlist-sub">The man who gave Laura her American start</div>
+          <div class="playlist-title" data-editable="sections[11].videos[3].title">Dr. Anthony</div>
+          <div class="playlist-sub" data-editable="sections[11].videos[3].sub">The man who gave Laura her American start</div>
         </div>
       </button>
       <button class="playlist-item" data-src="videos/third-times-the-charm.mp4" data-title="Third Time&rsquo;s the Charm" data-desc="Failed twice, one attempt left — and the moment everything changed">
         <span class="playlist-num">5</span>
         <div class="playlist-text">
-          <div class="playlist-title">Third Time&rsquo;s the Charm</div>
-          <div class="playlist-sub">Failed twice, one attempt left</div>
+          <div class="playlist-title" data-editable="sections[11].videos[4].title">Third Time&rsquo;s the Charm</div>
+          <div class="playlist-sub" data-editable="sections[11].videos[4].sub">Failed twice, one attempt left</div>
         </div>
       </button>
       <button class="playlist-item" data-src="videos/celebrating-10-years-together.mp4" data-title="Ten Years Later" data-desc="Renewing vows on the beach in Puerto Rico">
         <span class="playlist-num">6</span>
         <div class="playlist-text">
-          <div class="playlist-title">Ten Years Later</div>
-          <div class="playlist-sub">Renewing vows on the beach in Puerto Rico</div>
+          <div class="playlist-title" data-editable="sections[11].videos[5].title">Ten Years Later</div>
+          <div class="playlist-sub" data-editable="sections[11].videos[5].sub">Renewing vows on the beach in Puerto Rico</div>
         </div>
       </button>
     </div>
     <div class="player-area">
       <video id="main-player" controls playsinline preload="metadata" src="videos/love-at-first-swipe.mp4"></video>
       <div class="player-info">
-        <h3>The Last Message</h3>
-        <p>How a buried Tinder match became a marriage in five months</p>
+        <h3 data-editable="sections[11].videos[0].title">The Last Message</h3>
+        <p data-editable="sections[11].videos[0].desc">How a buried Tinder match became a marriage in five months</p>
       </div>
     </div>
   </div>
@@ -1870,11 +2010,161 @@
 
 <!-- FOOTER -->
 <footer>
-  <a href="https://storyof.co" target="_blank"><div class="footer-brand"><strong>Story</strong><span>of</span></div></a>
-  <div class="footer-sub">Crafted with love by <a href="https://storyof.co" target="_blank"><strong>Story</strong><span>of</span>.co</a></div>
+  <a href="https://storyof.co" target="_blank"><img src="assets/made-with-love.png" alt="Made with love by storyof.co" style="height: 80px; width: auto; opacity: 0.7; transition: opacity 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'"></a>
 </footer>
 
 <script>
+// "Watch the Film" — scroll to film section and play
+(function() {
+  var btn = document.getElementById('watch-film-btn');
+  var video = document.getElementById('film-video');
+  if (!btn || !video) return;
+  btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('film').scrollIntoView({ behavior: 'smooth' });
+    setTimeout(function() {
+      video.play().catch(function() {});
+      if (video.requestFullscreen) {
+        video.requestFullscreen().catch(function() {});
+      } else if (video.webkitEnterFullscreen) {
+        video.webkitEnterFullscreen();
+      }
+    }, 600);
+  });
+})();
+
+// Share buttons — Desktop: popover menu, Mobile: native share
+(function() {
+  const toast = document.createElement('div');
+  toast.className = 'share-toast';
+  toast.textContent = 'Link copied!';
+  document.body.appendChild(toast);
+
+  let toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg || 'Link copied!';
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+
+  // Detect mobile/touch device
+  function isMobile() {
+    return window.matchMedia('(pointer: coarse)').matches;
+  }
+
+  // Create shared share menu
+  const shareMenu = document.createElement('div');
+  shareMenu.className = 'share-menu';
+  shareMenu.id = 'share-menu';
+  shareMenu.innerHTML = `
+    <button class="share-option" data-action="facebook">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+      Facebook
+    </button>
+    <button class="share-option" data-action="twitter">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      X (Twitter)
+    </button>
+    <button class="share-option" data-action="whatsapp">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+      WhatsApp
+    </button>
+    <button class="share-option" data-action="email">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      Email
+    </button>
+    <button class="share-option" data-action="copy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy Link
+    </button>
+  `;
+  document.body.appendChild(shareMenu);
+
+  let currentShareTitle = '';
+  let currentShareUrl = '';
+
+  function closeShareMenu() {
+    shareMenu.classList.remove('visible');
+  }
+
+  // Close on click outside or scroll
+  document.addEventListener('click', (e) => {
+    if (!shareMenu.contains(e.target)) closeShareMenu();
+  });
+  document.addEventListener('scroll', closeShareMenu, { passive: true });
+
+  // Handle share option clicks
+  shareMenu.addEventListener('click', async (e) => {
+    const opt = e.target.closest('.share-option');
+    if (!opt) return;
+    const action = opt.dataset.action;
+    const encodedUrl = encodeURIComponent(currentShareUrl);
+    const encodedTitle = encodeURIComponent(currentShareTitle);
+
+    switch (action) {
+      case 'facebook':
+        window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodedUrl, '_blank', 'width=600,height=400');
+        break;
+      case 'twitter':
+        window.open('https://twitter.com/intent/tweet?url=' + encodedUrl + '&text=' + encodedTitle, '_blank', 'width=600,height=400');
+        break;
+      case 'whatsapp':
+        window.open('https://wa.me/?text=' + encodedTitle + '%20' + encodedUrl, '_blank', 'width=600,height=400');
+        break;
+      case 'email':
+        window.location.href = 'mailto:?subject=' + encodedTitle + '&body=' + encodedUrl;
+        break;
+      case 'copy':
+        try {
+          await navigator.clipboard.writeText(currentShareUrl);
+          showToast('Copied!');
+        } catch (_) {}
+        break;
+    }
+    closeShareMenu();
+  });
+
+  // Inject share buttons into elements that don't have one yet
+  const shareSvg = '<svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
+  document.querySelectorAll('.timeline-illus, .gallery-scattered .photo-item').forEach(el => {
+    if (!el.querySelector('.share-btn')) {
+      el.style.position = el.style.position || 'relative';
+      const btn = document.createElement('div');
+      btn.className = 'share-btn';
+      btn.title = 'Share';
+      btn.innerHTML = shareSvg;
+      el.appendChild(btn);
+    }
+  });
+
+  document.querySelectorAll('.share-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const card = btn.closest('.photo-item, .story-block, .hero, .film-section, .timeline-illus');
+      currentShareTitle = card?.querySelector('h3, h2, .chapter-title, .tl-title')?.textContent || 'Laura & Josh \u2014 our.storyof.co';
+      currentShareUrl = window.location.href;
+
+      if (isMobile() && navigator.share) {
+        try {
+          await navigator.share({ title: currentShareTitle, url: currentShareUrl });
+        } catch (err) {
+          if (err.name !== 'AbortError') {
+            try { await navigator.clipboard.writeText(currentShareUrl); showToast(); } catch (_) {}
+          }
+        }
+      } else {
+        // Position and show share menu near the button
+        const rect = btn.getBoundingClientRect();
+        shareMenu.style.top = (rect.bottom + 8) + 'px';
+        shareMenu.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - 220)) + 'px';
+        shareMenu.classList.toggle('visible');
+      }
+    });
+  });
+})();
+
 // Password gate
 (function() {
   const gate = document.getElementById('password-gate');
@@ -1917,6 +2207,50 @@
   });
 })();
 
+// Hero image loading + loading screen (waits for password gate)
+(function() {
+  function startHeroLoad() {
+    const loadingScreen = document.getElementById('loading-screen');
+    const loadingBar = document.getElementById('loading-bar');
+    const heroBg = document.querySelector('.hero-bg');
+    if (!loadingScreen || !heroBg) return;
+
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      progress = Math.min(progress + (90 - progress) * 0.05, 90);
+      loadingBar.style.width = progress + '%';
+    }, 100);
+
+    const heroImg = new Image();
+    heroImg.src = 'assets/surprise/Josh and Laura (40).webp';
+    heroImg.onload = function() {
+      clearInterval(progressInterval);
+      loadingBar.style.width = '100%';
+      heroBg.classList.add('loaded');
+      setTimeout(() => {
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => loadingScreen.remove(), 600);
+      }, 300);
+    };
+    setTimeout(() => {
+      if (!heroBg.classList.contains('loaded')) {
+        clearInterval(progressInterval);
+        heroBg.classList.add('loaded');
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => loadingScreen.remove(), 600);
+      }
+    }, 8000);
+  }
+
+  // If already authed (returning visitor), start immediately
+  if (window._storyofAuthed) {
+    startHeroLoad();
+  } else {
+    // Wait for password gate to be dismissed
+    window.addEventListener('storyof-auth', startHeroLoad);
+  }
+})();
+
 // Mobile carousel: highlight center item (for scattered-photos and story-scattered)
 (function() {
   function initCarousels() {
@@ -1947,6 +2281,124 @@
 
   initCarousels();
   window.addEventListener('resize', () => { initCarousels(); });
+})();
+
+// Timeline: fade-in on scroll + draw weaving trail
+(function() {
+  const trail = document.querySelector('.timeline-trail');
+  const nodes = document.querySelectorAll('.timeline-node');
+  if (!trail || !nodes.length) return;
+
+  // Fade-in observer
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('fade-in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  nodes.forEach(node => observer.observe(node));
+
+  // Seeded random for consistent weave across redraws
+  function seededRandom(seed) {
+    let s = seed;
+    return function() {
+      s = (s * 16807 + 0) % 2147483647;
+      return (s - 1) / 2147483646;
+    };
+  }
+  let rand = seededRandom(42);
+  // Pre-generate random offsets per node so they stay stable
+  const randomOffsets = Array.from({ length: nodes.length }, () => ({
+    xJitter: (rand() - 0.5) * 0.06,  // ±3% of width randomness
+    yJitter: (rand() - 0.5) * 20     // ±10px vertical jitter
+  }));
+
+  // Draw weaving SVG trail
+  function drawTrail() {
+    const existing = trail.querySelector('svg.trail-path');
+    if (existing) existing.remove();
+
+    const trailRect = trail.getBoundingClientRect();
+    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const centerX = trailRect.width / 2;
+    const points = [];
+
+    nodes.forEach((node, i) => {
+      const nodeRect = node.getBoundingClientRect();
+      const dotY = nodeRect.top - trailRect.top + rem * 1.6 + randomOffsets[i].yJitter;
+
+      // Alternate sides with random variation in weave width
+      const baseWeave = trailRect.width * (0.04 + Math.abs(randomOffsets[i].xJitter));
+      const isOdd = i % 2 === 0;
+      const dotX = isOdd
+        ? centerX + baseWeave
+        : centerX - baseWeave;
+
+      points.push({ x: dotX, y: dotY });
+
+      // Set CSS custom property so X marks line up
+      const pct = (dotX / trailRect.width) * 100;
+      node.style.setProperty('--x-pos', pct + '%');
+    });
+
+    // Build path with varied control points for organic feel
+    let d = `M ${points[0].x} ${points[0].y - 50}`;
+    d += ` Q ${points[0].x + (rand() - 0.5) * 30} ${points[0].y - 20}, ${points[0].x} ${points[0].y}`;
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const curr = points[i];
+      const next = points[i + 1];
+      const dy = next.y - curr.y;
+      // Randomize control point heights for organic curves
+      const cp1y = curr.y + dy * (0.3 + rand() * 0.2);
+      const cp2y = curr.y + dy * (0.55 + rand() * 0.2);
+      // Add slight x wander to control points
+      const cp1x = curr.x + (rand() - 0.5) * 20;
+      const cp2x = next.x + (rand() - 0.5) * 20;
+      d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${next.x} ${next.y}`;
+    }
+
+    const last = points[points.length - 1];
+    d += ` Q ${last.x + (rand() - 0.5) * 30} ${last.y + 20}, ${last.x} ${last.y + 50}`;
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.classList.add('trail-path');
+    svg.setAttribute('width', trailRect.width);
+    svg.setAttribute('height', trailRect.height);
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    svg.appendChild(path);
+
+    trail.insertBefore(svg, trail.firstChild);
+  }
+
+  // Draw after layout settles, and redraw after all images load
+  function scheduleDrawTrail() {
+    // Reset seeded random so path is consistent
+    rand = seededRandom(42);
+    randomOffsets.forEach((o, i) => {
+      o.xJitter = (rand() - 0.5) * 0.06;
+      o.yJitter = (rand() - 0.5) * 20;
+    });
+    drawTrail();
+  }
+
+  // Initial draw
+  setTimeout(scheduleDrawTrail, 300);
+
+  // Redraw when each timeline image loads (shifts layout)
+  const tlImages = trail.querySelectorAll('img');
+  tlImages.forEach(img => {
+    if (img.complete) return;
+    img.addEventListener('load', () => { setTimeout(scheduleDrawTrail, 50); });
+  });
+
+  // Final redraw when everything is loaded
+  window.addEventListener('load', () => { setTimeout(scheduleDrawTrail, 200); });
+  window.addEventListener('resize', () => { setTimeout(scheduleDrawTrail, 100); });
 })();
 
 // Gallery infinite scroll — clone items, use CSS animation for seamless loop
@@ -2107,243 +2559,6 @@
   window.addEventListener('resize', initMobileGallery);
 })();
 
-// Timeline: fade-in on scroll + draw weaving trail
-(function() {
-  const trail = document.querySelector('.timeline-trail');
-  const nodes = document.querySelectorAll('.timeline-node');
-  if (!trail || !nodes.length) return;
-
-  // Fade-in observer
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('fade-in');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
-  nodes.forEach(node => observer.observe(node));
-
-  // Seeded random for consistent weave across redraws
-  function seededRandom(seed) {
-    let s = seed;
-    return function() {
-      s = (s * 16807 + 0) % 2147483647;
-      return (s - 1) / 2147483646;
-    };
-  }
-  let rand = seededRandom(42);
-  // Pre-generate random offsets per node so they stay stable
-  const randomOffsets = Array.from({ length: nodes.length }, () => ({
-    xJitter: (rand() - 0.5) * 0.06,  // ±3% of width randomness
-    yJitter: (rand() - 0.5) * 20     // ±10px vertical jitter
-  }));
-
-  // Draw weaving SVG trail
-  function drawTrail() {
-    const existing = trail.querySelector('svg.trail-path');
-    if (existing) existing.remove();
-
-    const trailRect = trail.getBoundingClientRect();
-    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    const centerX = trailRect.width / 2;
-    const points = [];
-
-    nodes.forEach((node, i) => {
-      const nodeRect = node.getBoundingClientRect();
-      const dotY = nodeRect.top - trailRect.top + rem * 1.6 + randomOffsets[i].yJitter;
-
-      // Alternate sides with random variation in weave width
-      const baseWeave = trailRect.width * (0.04 + Math.abs(randomOffsets[i].xJitter));
-      const isOdd = i % 2 === 0;
-      const dotX = isOdd
-        ? centerX + baseWeave
-        : centerX - baseWeave;
-
-      points.push({ x: dotX, y: dotY });
-
-      // Set CSS custom property so X marks line up
-      const pct = (dotX / trailRect.width) * 100;
-      node.style.setProperty('--x-pos', pct + '%');
-    });
-
-    // Build path with varied control points for organic feel
-    let d = `M ${points[0].x} ${points[0].y - 50}`;
-    d += ` Q ${points[0].x + (rand() - 0.5) * 30} ${points[0].y - 20}, ${points[0].x} ${points[0].y}`;
-
-    for (let i = 0; i < points.length - 1; i++) {
-      const curr = points[i];
-      const next = points[i + 1];
-      const dy = next.y - curr.y;
-      // Randomize control point heights for organic curves
-      const cp1y = curr.y + dy * (0.3 + rand() * 0.2);
-      const cp2y = curr.y + dy * (0.55 + rand() * 0.2);
-      // Add slight x wander to control points
-      const cp1x = curr.x + (rand() - 0.5) * 20;
-      const cp2x = next.x + (rand() - 0.5) * 20;
-      d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${next.x} ${next.y}`;
-    }
-
-    const last = points[points.length - 1];
-    d += ` Q ${last.x + (rand() - 0.5) * 30} ${last.y + 20}, ${last.x} ${last.y + 50}`;
-
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.classList.add('trail-path');
-    svg.setAttribute('width', trailRect.width);
-    svg.setAttribute('height', trailRect.height);
-
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', d);
-    svg.appendChild(path);
-
-    trail.insertBefore(svg, trail.firstChild);
-  }
-
-  // Draw after layout settles, and redraw after all images load
-  function scheduleDrawTrail() {
-    // Reset seeded random so path is consistent
-    rand = seededRandom(42);
-    randomOffsets.forEach((o, i) => {
-      o.xJitter = (rand() - 0.5) * 0.06;
-      o.yJitter = (rand() - 0.5) * 20;
-    });
-    drawTrail();
-  }
-
-  // Initial draw
-  setTimeout(scheduleDrawTrail, 300);
-
-  // Redraw when each timeline image loads (shifts layout)
-  const tlImages = trail.querySelectorAll('img');
-  tlImages.forEach(img => {
-    if (img.complete) return;
-    img.addEventListener('load', () => { setTimeout(scheduleDrawTrail, 50); });
-  });
-
-  // Final redraw when everything is loaded
-  window.addEventListener('load', () => { setTimeout(scheduleDrawTrail, 200); });
-  window.addEventListener('resize', () => { setTimeout(scheduleDrawTrail, 100); });
-})();
-
-// Share buttons — Desktop: popover menu, Mobile: native share
-(function() {
-  const toast = document.createElement('div');
-  toast.className = 'share-toast';
-  toast.textContent = 'Link copied!';
-  document.body.appendChild(toast);
-
-  let toastTimer;
-  function showToast(msg) {
-    toast.textContent = msg || 'Link copied!';
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
-  }
-
-  // Detect mobile/touch device
-  function isMobile() {
-    return window.matchMedia('(pointer: coarse)').matches;
-  }
-
-  // Create shared share menu
-  const shareMenu = document.createElement('div');
-  shareMenu.className = 'share-menu';
-  shareMenu.id = 'share-menu';
-  shareMenu.innerHTML = `
-    <button class="share-option" data-action="facebook">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-      Facebook
-    </button>
-    <button class="share-option" data-action="twitter">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      X (Twitter)
-    </button>
-    <button class="share-option" data-action="whatsapp">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
-      WhatsApp
-    </button>
-    <button class="share-option" data-action="email">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-      Email
-    </button>
-    <button class="share-option" data-action="copy">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-      Copy Link
-    </button>
-  `;
-  document.body.appendChild(shareMenu);
-
-  let currentShareTitle = '';
-  let currentShareUrl = '';
-
-  function closeShareMenu() {
-    shareMenu.classList.remove('visible');
-  }
-
-  // Close on click outside or scroll
-  document.addEventListener('click', (e) => {
-    if (!shareMenu.contains(e.target)) closeShareMenu();
-  });
-  document.addEventListener('scroll', closeShareMenu, { passive: true });
-
-  // Handle share option clicks
-  shareMenu.addEventListener('click', async (e) => {
-    const opt = e.target.closest('.share-option');
-    if (!opt) return;
-    const action = opt.dataset.action;
-    const encodedUrl = encodeURIComponent(currentShareUrl);
-    const encodedTitle = encodeURIComponent(currentShareTitle);
-
-    switch (action) {
-      case 'facebook':
-        window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodedUrl, '_blank', 'width=600,height=400');
-        break;
-      case 'twitter':
-        window.open('https://twitter.com/intent/tweet?url=' + encodedUrl + '&text=' + encodedTitle, '_blank', 'width=600,height=400');
-        break;
-      case 'whatsapp':
-        window.open('https://wa.me/?text=' + encodedTitle + '%20' + encodedUrl, '_blank', 'width=600,height=400');
-        break;
-      case 'email':
-        window.location.href = 'mailto:?subject=' + encodedTitle + '&body=' + encodedUrl;
-        break;
-      case 'copy':
-        try {
-          await navigator.clipboard.writeText(currentShareUrl);
-          showToast('Copied!');
-        } catch (_) {}
-        break;
-    }
-    closeShareMenu();
-  });
-
-  document.querySelectorAll('.share-btn').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      const card = btn.closest('.photo-item, .story-block, .hero');
-      currentShareTitle = card?.querySelector('h3, h2, .chapter-title')?.textContent || 'Laura & Josh — our.storyof.co';
-      currentShareUrl = window.location.href;
-
-      if (isMobile() && navigator.share) {
-        try {
-          await navigator.share({ title: currentShareTitle, url: currentShareUrl });
-        } catch (err) {
-          if (err.name !== 'AbortError') {
-            try { await navigator.clipboard.writeText(currentShareUrl); showToast(); } catch (_) {}
-          }
-        }
-      } else {
-        // Position and show share menu near the button
-        const rect = btn.getBoundingClientRect();
-        shareMenu.style.top = (rect.bottom + 8) + 'px';
-        shareMenu.style.left = Math.max(8, Math.min(rect.left, window.innerWidth - 220)) + 'px';
-        shareMenu.classList.toggle('visible');
-      }
-    });
-  });
-})();
-
 // Playlist — desktop: swap video source, mobile: fullscreen
 (function() {
   const player = document.getElementById('main-player');
@@ -2480,49 +2695,222 @@
   }
 })();
 
-// Hero image loading + loading screen (waits for password gate)
+// === LIGHTBOX (reusable) ===
 (function() {
-  function startHeroLoad() {
-    const loadingScreen = document.getElementById('loading-screen');
-    const loadingBar = document.getElementById('loading-bar');
-    const heroBg = document.querySelector('.hero-bg');
-    if (!loadingScreen || !heroBg) return;
+  var overlay = document.getElementById('lightbox');
+  var track = document.getElementById('lightbox-track');
+  var closeBtn = document.getElementById('lightbox-close');
+  if (!overlay) return;
 
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-      progress = Math.min(progress + (90 - progress) * 0.05, 90);
-      loadingBar.style.width = progress + '%';
-    }, 100);
+  var currentSrcs = [];
+  var currentIndex = 0;
+  var slides = [];
+  var transitioning = false;
+  var rotations = [8, -12, 6, -9, 14, -7];
 
-    const heroImg = new Image();
-    heroImg.src = 'assets/surprise/Josh and Laura (40).webp';
-    heroImg.onload = function() {
-      clearInterval(progressInterval);
-      loadingBar.style.width = '100%';
-      heroBg.classList.add('loaded');
-      setTimeout(() => {
-        loadingScreen.classList.add('fade-out');
-        setTimeout(() => loadingScreen.remove(), 600);
-      }, 300);
-    };
-    setTimeout(() => {
-      if (!heroBg.classList.contains('loaded')) {
-        clearInterval(progressInterval);
-        heroBg.classList.add('loaded');
-        loadingScreen.classList.add('fade-out');
-        setTimeout(() => loadingScreen.remove(), 600);
+  function wrap(i, n) { return ((i % n) + n) % n; }
+
+  function buildSlides() {
+    track.innerHTML = '';
+    slides = [];
+    for (var i = 0; i < currentSrcs.length; i++) {
+      var div = document.createElement('div');
+      div.className = 'lightbox-slide lb-hidden';
+      div.style.transition = 'none';
+      var img = document.createElement('img');
+      img.src = currentSrcs[i];
+      img.alt = '';
+      div.appendChild(img);
+      track.appendChild(div);
+      slides.push(div);
+      (function(idx) {
+        div.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (idx === currentIndex) return;
+          goTo(idx);
+        });
+      })(i);
+    }
+  }
+
+  // Fit image to a max box preserving aspect ratio, return {w, h}
+  function fitSize(img, maxW, maxH) {
+    var nw = img.naturalWidth || maxW;
+    var nh = img.naturalHeight || maxH;
+    var ratio = Math.min(maxW / nw, maxH / nh);
+    return { w: nw * ratio, h: nh * ratio };
+  }
+
+  function positionSlides() {
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var count = currentSrcs.length;
+
+    var sideMaxW = Math.min(vw * 0.22, 280);
+    var sideMaxH = Math.min(vh * 0.45, 360);
+    var centerMaxW = Math.min(vw * 0.55, 800);
+    var centerMaxH = vh * 0.78;
+
+    // Compute the side size for each image (preserving ratio)
+    // Then compute scale factor to go from side size → center size
+    for (var i = 0; i < count; i++) {
+      var slide = slides[i];
+      var img = slide.querySelector('img');
+      var rel = ((i - currentIndex + count) % count);
+      var rot = rotations[i % rotations.length];
+
+      // Side size: fit to side box, no crop
+      var side = fitSize(img, sideMaxW, sideMaxH);
+      img.style.width = side.w + 'px';
+      img.style.height = side.h + 'px';
+      img.style.objectFit = 'contain';
+
+      if (rel === 0) {
+        // Center: scale up from side size to fill center box
+        var center = fitSize(img, centerMaxW, centerMaxH);
+        var centerScale = center.w / side.w;
+        slide.className = 'lightbox-slide lb-center';
+        slide.style.left = '50%';
+        slide.style.top = '50%';
+        slide.style.transform = 'translate(-50%, -50%) rotate(0deg) scale(' + centerScale + ')';
+      } else if (rel === 1) {
+        slide.className = 'lightbox-slide lb-next';
+        slide.style.left = (vw - sideMaxW * 0.35) + 'px';
+        slide.style.top = '52%';
+        slide.style.transform = 'translate(-50%, -50%) rotate(' + rot + 'deg) scale(1)';
+      } else if (rel === count - 1) {
+        slide.className = 'lightbox-slide lb-prev';
+        slide.style.left = (sideMaxW * 0.35) + 'px';
+        slide.style.top = '52%';
+        slide.style.transform = 'translate(-50%, -50%) rotate(' + rot + 'deg) scale(1)';
+      } else {
+        var wasVisible = !slide.classList.contains('lb-hidden');
+        if (!wasVisible) {
+          slide.style.transition = 'none';
+          slide.offsetHeight;
+        }
+        slide.className = 'lightbox-slide lb-hidden';
+        slide.style.left = (rel <= count / 2) ? (vw + 200) + 'px' : '-200px';
+        slide.style.top = '50%';
+        slide.style.transform = 'translate(-50%, -50%) rotate(' + rot + 'deg) scale(0.6)';
+        if (!wasVisible) {
+          slide.offsetHeight;
+          slide.style.transition = '';
+        }
       }
-    }, 8000);
+    }
   }
 
-  // If already authed (returning visitor), start immediately
-  if (window._storyofAuthed) {
-    startHeroLoad();
-  } else {
-    // Wait for password gate to be dismissed
-    window.addEventListener('storyof-auth', startHeroLoad);
+  function goTo(idx) {
+    if (transitioning) return;
+    transitioning = true;
+    currentIndex = idx;
+    positionSlides();
+    setTimeout(function() { transitioning = false; }, 500);
   }
+
+  function setInitialPositions() {
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var sideMaxW = Math.min(vw * 0.22, 280);
+    var sideMaxH = Math.min(vh * 0.45, 360);
+    for (var i = 0; i < slides.length; i++) {
+      var slide = slides[i];
+      var img = slide.querySelector('img');
+      var side = fitSize(img, sideMaxW, sideMaxH);
+      img.style.width = side.w + 'px';
+      img.style.height = side.h + 'px';
+      img.style.objectFit = 'contain';
+      slide.style.transition = 'none';
+      slide.style.opacity = '0';
+      slide.style.left = '50%';
+      slide.style.top = '120%';
+      slide.style.transform = 'translate(-50%, -50%) rotate(' + rotations[i % rotations.length] + 'deg) scale(0.6)';
+    }
+  }
+
+  function openLightbox(srcs, index) {
+    currentSrcs = srcs;
+    currentIndex = index;
+    buildSlides();
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    // Position everything offscreen with no transition
+    setInitialPositions();
+    // Force layout reflow
+    track.offsetHeight;
+    // Re-enable transitions and animate to final positions
+    requestAnimationFrame(function() {
+      for (var i = 0; i < slides.length; i++) {
+        slides[i].style.transition = '';
+        slides[i].style.opacity = '';
+      }
+      positionSlides();
+    });
+  }
+
+  function closeLightbox() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // --- Hook up: scattered-photos (film frames) ---
+  var scattered = document.querySelector('.scattered-photos');
+  if (scattered) {
+    var scatteredSrcs = Array.from(scattered.querySelectorAll('.photo-item img')).map(function(img) { return img.src; });
+    Array.from(scattered.querySelectorAll('.photo-item')).forEach(function(item, i) {
+      item.addEventListener('click', function(e) {
+        if (e.target.closest('.share-btn')) return;
+        e.stopPropagation();
+        openLightbox(scatteredSrcs, i);
+      });
+    });
+  }
+
+  // --- Hook up: timeline illustrations ---
+  var timelineImgs = Array.from(document.querySelectorAll('.timeline-illus img'));
+  if (timelineImgs.length) {
+    var timelineSrcs = timelineImgs.map(function(img) { return img.src; });
+    timelineImgs.forEach(function(img, i) {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', function(e) {
+        e.stopPropagation();
+        openLightbox(timelineSrcs, i);
+      });
+    });
+  }
+
+  // --- Hook up: gallery-scattered (Moments) ---
+  var gallery = document.querySelector('.gallery-scattered');
+  if (gallery) {
+    var gallerySrcs = Array.from(gallery.querySelectorAll('.photo-item img')).map(function(img) { return img.src; });
+    Array.from(gallery.querySelectorAll('.photo-item')).forEach(function(item, i) {
+      item.addEventListener('click', function(e) {
+        if (e.target.closest('.share-btn')) return;
+        e.stopPropagation();
+        openLightbox(gallerySrcs, i);
+      });
+    });
+  }
+
+  // Close handlers
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closeLightbox();
+  });
+  closeBtn.addEventListener('click', function(e) { e.stopPropagation(); closeLightbox(); });
+
+  document.addEventListener('keydown', function(e) {
+    if (!overlay.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowRight') goTo(wrap(currentIndex + 1, currentSrcs.length));
+    if (e.key === 'ArrowLeft') goTo(wrap(currentIndex - 1, currentSrcs.length));
+  });
+
+  window.addEventListener('resize', function() {
+    if (overlay.classList.contains('active')) positionSlides();
+  });
 })();
+
 </script>
 </body>
 </html>
