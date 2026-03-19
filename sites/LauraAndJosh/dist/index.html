@@ -1683,7 +1683,10 @@
     outline: none;
     object-fit: cover;
     background: transparent;
+    opacity: 0;
+    transition: opacity 0.3s;
   }
+  .film-section video.film-playing { opacity: 1; }
   .film-play-overlay {
     position: absolute;
     inset: 0;
@@ -2059,6 +2062,7 @@
   if (!video || !overlay) return;
 
   function playFilm() {
+    video.classList.add('film-playing');
     video.controls = true;
     overlay.classList.add('hidden');
     video.play().catch(function() {});
@@ -2088,6 +2092,7 @@
   // Show overlay again when video ends
   video.addEventListener('ended', function() {
     video.controls = false;
+    video.classList.remove('film-playing');
     overlay.classList.remove('hidden');
   });
 })();
