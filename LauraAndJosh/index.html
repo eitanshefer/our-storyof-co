@@ -1667,13 +1667,40 @@
     justify-content: center;
     overflow: hidden;
   }
-  .film-section video {
+  .film-section .film-wrap {
+    position: relative;
     width: 80%;
+    max-height: 90vh;
+  }
+  .film-section video {
+    width: 100%;
     max-height: 90vh;
     display: block;
     outline: none;
     border-radius: 6px;
   }
+  .film-play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.15);
+    transition: background 0.3s;
+  }
+  .film-play-overlay:hover { background: rgba(0,0,0,0.3); }
+  .film-play-overlay svg {
+    width: 72px;
+    height: 72px;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+    opacity: 0.9;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+  .film-play-overlay:hover svg { transform: scale(1.1); opacity: 1; }
+  .film-play-overlay.hidden { display: none; }
 </style>
 <section class="hero">
   <div class="hero-bg"></div>
@@ -1686,9 +1713,14 @@
 
 <!-- THE FILM -->
 <section class="film-section" id="film" style="margin-top: 30px; position: relative;">
-  <video id="film-video" controls preload="metadata" playsinline poster="/assets/film-poster.jpg">
-    <source src="https://media.storyof.co/LauraAndJosh/film.mp4" type="video/mp4">
-  </video>
+  <div class="film-wrap">
+    <video id="film-video" preload="metadata" playsinline poster="/assets/film-poster.jpg">
+      <source src="https://media.storyof.co/LauraAndJosh/film.mp4" type="video/mp4">
+    </video>
+    <div class="film-play-overlay" id="film-play-overlay">
+      <svg viewBox="0 0 72 72" fill="none"><circle cx="36" cy="36" r="35" fill="rgba(200,164,92,0.7)" stroke="rgba(245,230,200,0.5)" stroke-width="2"/><polygon points="28,20 28,52 54,36" fill="#F5E6C8"/></svg>
+    </div>
+  </div>
   <div class="share-btn" title="Share" style="top: 12px; right: 12px;"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
 </section>
 
@@ -2014,22 +2046,44 @@
 </footer>
 
 <script>
-// "Watch the Film" — scroll to film section and play
+// Film player — custom play overlay, show controls only after play
 (function() {
   var btn = document.getElementById('watch-film-btn');
   var video = document.getElementById('film-video');
-  if (!btn || !video) return;
-  btn.addEventListener('click', function(e) {
-    e.preventDefault();
-    document.getElementById('film').scrollIntoView({ behavior: 'smooth' });
-    setTimeout(function() {
-      video.play().catch(function() {});
-      if (video.requestFullscreen) {
-        video.requestFullscreen().catch(function() {});
-      } else if (video.webkitEnterFullscreen) {
-        video.webkitEnterFullscreen();
-      }
-    }, 600);
+  var overlay = document.getElementById('film-play-overlay');
+  if (!video || !overlay) return;
+
+  function playFilm() {
+    video.controls = true;
+    overlay.classList.add('hidden');
+    video.play().catch(function() {});
+  }
+
+  // Click overlay to play
+  overlay.addEventListener('click', function() {
+    playFilm();
+  });
+
+  // "Watch the Film" CTA button
+  if (btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('film').scrollIntoView({ behavior: 'smooth' });
+      setTimeout(function() {
+        playFilm();
+        if (video.requestFullscreen) {
+          video.requestFullscreen().catch(function() {});
+        } else if (video.webkitEnterFullscreen) {
+          video.webkitEnterFullscreen();
+        }
+      }, 600);
+    });
+  }
+
+  // Show overlay again when video ends
+  video.addEventListener('ended', function() {
+    video.controls = false;
+    overlay.classList.remove('hidden');
   });
 })();
 
