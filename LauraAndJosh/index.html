@@ -1670,14 +1670,18 @@
   .film-section .film-wrap {
     position: relative;
     width: 80%;
+    aspect-ratio: 16 / 9;
     max-height: 90vh;
+    border-radius: 6px;
+    overflow: hidden;
   }
   .film-section video {
     width: 100%;
-    max-height: 90vh;
+    height: 100%;
     display: block;
     outline: none;
-    border-radius: 6px;
+    object-fit: cover;
+    background: transparent;
   }
   .film-play-overlay {
     position: absolute;
